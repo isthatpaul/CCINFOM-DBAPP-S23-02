@@ -3,7 +3,8 @@ package Model;
 public class Employee
 {
     private int employeeID;
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private String address;
     private String contactNumber;
     private int departmentID;
@@ -11,9 +12,17 @@ public class Employee
     private String hireDate;
     private String lastLoginDate;
 
-    public Employee()
+    public Employee(int employeeID, String firstName, String lastName, String address, String contactNumber, int departmentID, String position, String hireDate, String lastLoginDate)
     {
-
+        this.employeeID = employeeID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.contactNumber = contactNumber;
+        this.departmentID = departmentID;
+        this.position = position;
+        this.hireDate = hireDate;
+        this.lastLoginDate = lastLoginDate;
     }
 
     // getters and setters
@@ -21,9 +30,13 @@ public class Employee
 
     public void setEmployeeID(int employeeID) { this.employeeID = employeeID; }
 
-    public String getFullName() { return fullName; }
+    public String getFirstName() { return firstName; }
 
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return lastName; }
+
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
     public String getAddress() { return address; }
 
