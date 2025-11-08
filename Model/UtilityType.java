@@ -8,9 +8,17 @@ public class UtilityType
     private String unitOfMeasure;
     private String createdDate;
     private String modifiedDate;
-    private boolean isActive;
+    private boolean isActive = true;
 
-    public UtilityType(int utilityTypeID, String utilityTypeName, String description, ) {}
+    public UtilityType(int utilityTypeID, String utilityTypeName, String description, String unitOfMeasure, String createdDate, String modifiedDate, boolean isActive)
+    {
+        this.utilityTypeID = utilityTypeID;
+        this.utilityTypeName = utilityTypeName;
+        this.description = description;
+        this.unitOfMeasure = unitOfMeasure;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
 
     // getters and setters
     public int getUtilityTypeID() { return utilityTypeID; }
