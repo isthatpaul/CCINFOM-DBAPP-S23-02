@@ -9,10 +9,10 @@ public class UtilityType
     private String description;
     private String unitOfMeasure;
     private Date createdDate;
-    private String modifiedDate;
+    private Date modifiedDate;
     private boolean isActive = true;
 
-    public UtilityType(int utilityTypeID, String utilityTypeName, String description, String unitOfMeasure, Date createdDate, String modifiedDate, boolean isActive)
+    public UtilityType(int utilityTypeID, String utilityTypeName, String description, String unitOfMeasure, Date createdDate, Date modifiedDate, boolean isActive)
     {
         this.utilityTypeID = utilityTypeID;
         this.utilityTypeName = utilityTypeName;
@@ -43,9 +43,9 @@ public class UtilityType
 
     public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
 
-    public String getModifiedDate() { return modifiedDate; }
+    public Date getModifiedDate() { return modifiedDate; }
 
-    public void setModifiedDate(String modifiedDate) { this.modifiedDate = modifiedDate; }
+    public void setModifiedDate(Date modifiedDate) { this.modifiedDate = modifiedDate; }
 
     public boolean isActive() { return isActive; }
 
