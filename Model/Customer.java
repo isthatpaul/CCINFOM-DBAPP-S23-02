@@ -12,8 +12,9 @@ public class Customer
     private String zipCode;
     private String contactNumber;
     private String createdDate;
+    private String billingStatus;
 
-    public Customer(int customerID, String accountNumber, String firstName, String lastName, String street,String city, String province, String zipCode, String contactNumber, String createdDate)
+    public Customer(int customerID, String accountNumber, String firstName, String lastName, String street,String city, String province, String zipCode, String contactNumber, String createdDate, String billingStatus)
     {
         this.customerID = customerID;
         this.accountNumber = accountNumber;
@@ -23,6 +24,7 @@ public class Customer
         this.province = province;
         this.contactNumber = contactNumber;
         this.createdDate = createdDate;
+        this.billingStatus = billingStatus;
     }
 
     // getters and setters
@@ -125,4 +127,8 @@ public class Customer
     {
         this.createdDate = createdDate;
     }
+
+    public String getBillingStatus() { return billingStatus;}
+
+    public void setBillingStatus(String billingStatus) { this.billingStatus = billingStatus;}
 }

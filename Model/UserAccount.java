@@ -2,14 +2,14 @@ package Model;
 
 public class UserAccount
 {
-    private Long userId;
-    private Long employeeId; // Foreign Key (Unique)
+    private int userId;
+    private int employeeId; // Foreign Key (Unique)
     private String username;
     private String password; // Storing as hash, not plain password
     private String role;
     private String assignedBranch;
 
-    public UserAccount(Long userId, Long employeeId, String username, String password, String role, String assignedBranch)
+    public UserAccount(int userId, int employeeId, String username, String password, String role, String assignedBranch)
     {
         this.userId = userId;
         this.employeeId = employeeId;
@@ -20,13 +20,13 @@ public class UserAccount
     }
 
     // Getters and Setters
-    public Long getUserId() { return userId; }
+    public int getUserId() { return userId; }
 
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setUserId(int userId) { this.userId = userId; }
 
-    public Long getEmployeeId() { return employeeId; }
+    public int getEmployeeId() { return employeeId; }
 
-    public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
+    public void setEmployeeId(int employeeId) { this.employeeId = employeeId; }
 
     public String getUsername() { return username; }
 

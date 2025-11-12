@@ -2,13 +2,13 @@ package Model;
 
 public class Meter
 {
-    private Long meterId;
-    private Long utilityTypeId; // Foreign Key
+    private int meterId;
+    private int utilityTypeId; // Foreign Key
     private String meterSerialNumber; // Unique Constraint
     private String meterStatus;
 
 
-    public Meter(Long meterId, Long utilityTypeId, String meterSerialNumber, String meterStatus)
+    public Meter(int meterId, int utilityTypeId, String meterSerialNumber, String meterStatus)
     {
         this.meterId = meterId;
         this.utilityTypeId = utilityTypeId;
@@ -17,13 +17,13 @@ public class Meter
     }
 
     // Getters and Setters
-    public Long getMeterId() { return meterId; }
+    public int getMeterId() { return meterId; }
 
-    public void setMeterId(Long meterId) { this.meterId = meterId; }
+    public void setMeterId(int meterId) { this.meterId = meterId; }
 
-    public Long getUtilityTypeId() { return utilityTypeId; }
+    public int getUtilityTypeId() { return utilityTypeId; }
 
-    public void setUtilityTypeId(Long utilityTypeId) { this.utilityTypeId = utilityTypeId; }
+    public void setUtilityTypeId(int utilityTypeId) { this.utilityTypeId = utilityTypeId; }
 
     public String getMeterSerialNumber() { return meterSerialNumber; }
 

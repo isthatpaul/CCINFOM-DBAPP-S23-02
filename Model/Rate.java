@@ -2,13 +2,13 @@ package Model;
 
 public class Rate
 {
-    private Long rateId;
-    private Long utilityTypeId; // Foreign Key
+    private int rateId;
+    private int utilityTypeId; // Foreign Key
     private Double ratePerUnit;
     private String effectiveDate;
 
 
-    public Rate(Long rateId, Long utilityTypeId, Double ratePerUnit, String effectiveDate)
+    public Rate(int rateId, int utilityTypeId, Double ratePerUnit, String effectiveDate)
     {
         this.rateId = rateId;
         this.utilityTypeId = utilityTypeId;
@@ -17,13 +17,13 @@ public class Rate
     }
 
     // Getters and Setters
-    public Long getRateId() { return rateId; }
+    public int getRateId() { return rateId; }
 
-    public void setRateId(Long rateId) { this.rateId = rateId; }
+    public void setRateId(int rateId) { this.rateId = rateId; }
 
-    public Long getUtilityTypeId() { return utilityTypeId; }
+    public int getUtilityTypeId() { return utilityTypeId; }
 
-    public void setUtilityTypeId(Long utilityTypeId) { this.utilityTypeId = utilityTypeId; }
+    public void setUtilityTypeId(int utilityTypeId) { this.utilityTypeId = utilityTypeId; }
 
     public Double getRatePerUnit() { return ratePerUnit; }
 
