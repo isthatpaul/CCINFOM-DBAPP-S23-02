@@ -1,14 +1,16 @@
 package Model;
 
+import java.sql.Date;
+
 public class Consumption
 {
     private int consumptionId;
     private int meterId;
     private Double consumptionValue;
-    private String readingDate;
-    private String billingPeriod;
+    private Date readingDate;
+    private Date billingPeriod;
 
-    public Consumption(int consumptionId, int meterId, Double consumptionValue, String readingDate, String billingPeriod)
+    public Consumption(int consumptionId, int meterId, Double consumptionValue, Date readingDate, Date billingPeriod)
     {
         this.consumptionId = consumptionId;
         this.meterId = meterId;
@@ -19,13 +21,22 @@ public class Consumption
 
     // Getters and Setters
     public int getConsumptionId() { return consumptionId; }
+
     public void setConsumptionId(int consumptionId) { this.consumptionId = consumptionId; }
+
     public int getMeterId() { return meterId; }
+
     public void setMeterId(int meterId) { this.meterId = meterId; }
+
     public Double getConsumptionValue() { return consumptionValue; }
+
     public void setConsumptionValue(Double consumptionValue) { this.consumptionValue = consumptionValue; }
-    public String getReadingDate() { return readingDate; }
-    public void setReadingDate(String readingDate) { this.readingDate = readingDate; }
-    public String getBillingPeriod() { return billingPeriod; }
-    public void setBillingPeriod(String billingPeriod) { this.billingPeriod = billingPeriod; }
+
+    public Date getReadingDate() { return readingDate; }
+
+    public void setReadingDate(Date readingDate) { this.readingDate = readingDate; }
+
+    public Date getBillingPeriod() { return billingPeriod; }
+
+    public void setBillingPeriod(Date billingPeriod) { this.billingPeriod = billingPeriod; }
 }

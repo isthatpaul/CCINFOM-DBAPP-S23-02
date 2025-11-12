@@ -1,14 +1,16 @@
 package Model;
 
+import java.sql.Date;
+
 public class Rate
 {
     private int rateId;
     private int utilityTypeId; // Foreign Key
     private Double ratePerUnit;
-    private String effectiveDate;
+    private Date effectiveDate;
 
 
-    public Rate(int rateId, int utilityTypeId, Double ratePerUnit, String effectiveDate)
+    public Rate(int rateId, int utilityTypeId, Double ratePerUnit, Date effectiveDate)
     {
         this.rateId = rateId;
         this.utilityTypeId = utilityTypeId;
@@ -29,7 +31,7 @@ public class Rate
 
     public void setRatePerUnit(Double ratePerUnit) { this.ratePerUnit = ratePerUnit; }
 
-    public String getEffectiveDate() { return effectiveDate; }
+    public Date getEffectiveDate() { return effectiveDate; }
 
-    public void setEffectiveDate(String effectiveDate) { this.effectiveDate = effectiveDate; }
+    public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
 }

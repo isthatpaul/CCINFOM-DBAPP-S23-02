@@ -1,17 +1,19 @@
 package Model;
 
+import java.sql.Date;
+
 public class MeterAssignment
 {
     private int assignmentID;
     private int customerID;
     private int meterID;
-    private String assignmentDate;
-    private String installationDate;
+    private Date assignmentDate;
+    private Date installationDate;
     private int assignedByUserID;
     private String status;
-    private String lastUpdated;
+    private Date lastUpdated;
 
-    public MeterAssignment(int assignmentID, int customerID, int meterID, String assignmentDate, String installationDate, int assignedByUserID, String status, String lastUpdated)
+    public MeterAssignment(int assignmentID, int customerID, int meterID, Date assignmentDate, Date installationDate, int assignedByUserID, String status, Date lastUpdated)
     {
         this.assignmentID = assignmentID;
         this.customerID = customerID;
@@ -35,13 +37,13 @@ public class MeterAssignment
 
     public void setMeterID(int meterID) { this.meterID = meterID; }
 
-    public String getAssignmentDate() { return assignmentDate; }
+    public Date getAssignmentDate() { return assignmentDate; }
 
-    public void setAssignmentDate(String assignmentDate) { this.assignmentDate = assignmentDate; }
+    public void setAssignmentDate(Date assignmentDate) { this.assignmentDate = assignmentDate; }
 
-    public String getInstallationDate() { return installationDate; }
+    public Date getInstallationDate() { return installationDate; }
 
-    public void setInstallationDate(String installationDate) { this.installationDate = installationDate; }
+    public void setInstallationDate(Date installationDate) { this.installationDate = installationDate; }
 
     public int getAssignedByUserID() { return assignedByUserID; }
 
@@ -49,7 +51,7 @@ public class MeterAssignment
 
     public void setStatus(String status) { this.status = status; }
 
-    public String getLastUpdated() { return lastUpdated; }
+    public Date getLastUpdated() { return lastUpdated; }
 
-    public void setLastUpdated(String lastUpdated) { this.lastUpdated = lastUpdated; }
+    public void setLastUpdated(Date lastUpdated) { this.lastUpdated = lastUpdated; }
 }

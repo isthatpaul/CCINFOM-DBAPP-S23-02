@@ -1,16 +1,18 @@
 package Model;
 
+import java.sql.Date;
+
 public class OverdueNotice
 {
     private int noticeID; // PK
     private int billID; // FK
     private String overdueDate;
     private Double penaltyAmount;
-    private String noticeDate;
+    private Date noticeDate;
     private String escalationStatus;
     private int sentByUserID; // FK
 
-    public OverdueNotice(int noticeID, int billID, String overdueDate, Double penaltyAmount, String noticeDate, String escalationStatus, int sentByUserID)
+    public OverdueNotice(int noticeID, int billID, String overdueDate, Double penaltyAmount, Date noticeDate, String escalationStatus, int sentByUserID)
     {
         this.noticeID = noticeID;
         this.billID = billID;
@@ -38,9 +40,9 @@ public class OverdueNotice
 
     public void setPenaltyAmount(Double penaltyAmount) { this.penaltyAmount = penaltyAmount; }
 
-    public String getNoticeDate() { return noticeDate; }
+    public Date getNoticeDate() { return noticeDate; }
 
-    public void setNoticeDate(String noticeDate) { this.noticeDate = noticeDate; }
+    public void setNoticeDate(Date noticeDate) { this.noticeDate = noticeDate; }
 
     public String getEscalationStatus() { return escalationStatus; }
 

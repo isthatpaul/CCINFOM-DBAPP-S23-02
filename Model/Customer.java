@@ -1,5 +1,7 @@
 package Model;
 
+import java.sql.Date;
+
 public class Customer
 {
     private int customerID;
@@ -11,10 +13,10 @@ public class Customer
     private String province;
     private String zipCode;
     private String contactNumber;
-    private String createdDate;
+    private Date createdDate;
     private String billingStatus;
 
-    public Customer(int customerID, String accountNumber, String firstName, String lastName, String street,String city, String province, String zipCode, String contactNumber, String createdDate, String billingStatus)
+    public Customer(int customerID, String accountNumber, String firstName, String lastName, String street,String city, String province, String zipCode, String contactNumber, Date createdDate, String billingStatus)
     {
         this.customerID = customerID;
         this.accountNumber = accountNumber;
@@ -118,12 +120,12 @@ public class Customer
         this.contactNumber = contactNumber;
     }
 
-    public String getCreatedDate()
+    public Date getCreatedDate()
     {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate)
+    public void setCreatedDate(Date createdDate)
     {
         this.createdDate = createdDate;
     }

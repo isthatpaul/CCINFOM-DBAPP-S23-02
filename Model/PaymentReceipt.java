@@ -1,10 +1,12 @@
 package Model;
 
+import java.sql.Date;
+
 public class PaymentReceipt
 {
     private int paymentID; // PK
     private int billID; // FK
-    private String paymentDate;
+    private Date paymentDate;
     private Double amountPaid;
     private String paymentMethod;
     private String receiptNumber; // UNIQUE Constraint
@@ -12,7 +14,7 @@ public class PaymentReceipt
     private int collectorID; // FK
     private String status;
 
-    public PaymentReceipt(int paymentID, int billID, String paymentDate, Double amountPaid, String paymentMethod, String receiptNumber, int processedByUserID, int collectorID, String status)
+    public PaymentReceipt(int paymentID, int billID, Date paymentDate, Double amountPaid, String paymentMethod, String receiptNumber, int processedByUserID, int collectorID, String status)
     {
         this.paymentID = paymentID;
         this.billID = billID;
@@ -34,9 +36,9 @@ public class PaymentReceipt
 
     public void setBillID(int billID) { this.billID = billID; }
 
-    public String getPaymentDate() { return paymentDate;}
+    public Date getPaymentDate() { return paymentDate;}
 
-    public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }
+    public void setPaymentDate(Date paymentDate) { this.paymentDate = paymentDate; }
 
     public Double getAmountPaid() { return amountPaid; }
 

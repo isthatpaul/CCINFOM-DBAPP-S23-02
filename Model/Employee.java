@@ -1,5 +1,7 @@
 package Model;
 
+import java.sql.Date;
+
 public class Employee
 {
     private int employeeID;
@@ -9,10 +11,10 @@ public class Employee
     private String contactNumber;
     private int departmentID;
     private String position;
-    private String hireDate;
-    private String lastLoginDate;
+    private Date hireDate;
+    private Date lastLoginDate;
 
-    public Employee(int employeeID, String firstName, String lastName, String address, String contactNumber, int departmentID, String position, String hireDate, String lastLoginDate)
+    public Employee(int employeeID, String firstName, String lastName, String address, String contactNumber, int departmentID, String position, Date hireDate, Date lastLoginDate)
     {
         this.employeeID = employeeID;
         this.firstName = firstName;
@@ -54,11 +56,11 @@ public class Employee
 
     public void setPosition(String position) { this.position = position; }
 
-    public String getHireDate() { return hireDate; }
+    public Date getHireDate() { return hireDate; }
 
-    public void setHireDate(String hireDate) { this.hireDate = hireDate; }
+    public void setHireDate(Date hireDate) { this.hireDate = hireDate; }
 
-    public String getLastLoginDate() { return lastLoginDate; }
+    public Date getLastLoginDate() { return lastLoginDate; }
 
-    public void setLastLoginDate(String lastLoginDate) { this.lastLoginDate = lastLoginDate; }
+    public void setLastLoginDate(Date lastLoginDate) { this.lastLoginDate = lastLoginDate; }
 }

@@ -1,16 +1,18 @@
 package Model;
 
+import java.sql.Date;
+
 public class UtilityType
 {
     private int utilityTypeID;
     private String utilityTypeName;
     private String description;
     private String unitOfMeasure;
-    private String createdDate;
+    private Date createdDate;
     private String modifiedDate;
     private boolean isActive = true;
 
-    public UtilityType(int utilityTypeID, String utilityTypeName, String description, String unitOfMeasure, String createdDate, String modifiedDate, boolean isActive)
+    public UtilityType(int utilityTypeID, String utilityTypeName, String description, String unitOfMeasure, Date createdDate, String modifiedDate, boolean isActive)
     {
         this.utilityTypeID = utilityTypeID;
         this.utilityTypeName = utilityTypeName;
@@ -37,9 +39,9 @@ public class UtilityType
 
     public void setUnitOfMeasure(String unitOfMeasure) { this.unitOfMeasure = unitOfMeasure; }
 
-    public String getCreatedDate() { return createdDate; }
+    public Date getCreatedDate() { return createdDate; }
 
-    public void setCreatedDate(String createdDate) { this.createdDate = createdDate; }
+    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
 
     public String getModifiedDate() { return modifiedDate; }
 
