@@ -6,13 +6,13 @@ public class OverdueNotice
 {
     private int noticeID; // PK
     private int billID; // FK
-    private String overdueDate;
+    private Date overdueDate;
     private Double penaltyAmount;
     private Date noticeDate;
     private String escalationStatus;
     private int sentByUserID; // FK
 
-    public OverdueNotice(int noticeID, int billID, String overdueDate, Double penaltyAmount, Date noticeDate, String escalationStatus, int sentByUserID)
+    public OverdueNotice(int noticeID, int billID, Date overdueDate, Double penaltyAmount, Date noticeDate, String escalationStatus, int sentByUserID)
     {
         this.noticeID = noticeID;
         this.billID = billID;
@@ -32,9 +32,9 @@ public class OverdueNotice
 
     public void setBillID(int billID) { this.billID = billID; }
 
-    public String getOverdueDate() { return overdueDate; }
+    public Date getOverdueDate() { return overdueDate; }
 
-    public void setOverdueDate(String overdueDate) { this.overdueDate = overdueDate; }
+    public void setOverdueDate(Date overdueDate) { this.overdueDate = overdueDate; }
 
     public Double getPenaltyAmount() { return penaltyAmount; }
 

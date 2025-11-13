@@ -1,5 +1,7 @@
 package Model;
 
+import java.sql.Date;
+
 public class Bill
 {
     private int billID; // PK
@@ -7,12 +9,12 @@ public class Bill
     private int consumptionID; // FK, UNIQUE
     private int rateID; // FK
     private Double amountDue;
-    private String dueDate;
+    private Date dueDate;
     private String status;
     private int generatedByUserID; // FK
     private int technicianID; // FK
 
-    public Bill(int billID, int customerID, int consumptionID, int rateID, Double amountDue, String dueDate, String status, int generatedByUserID, int technicianID)
+    public Bill(int billID, int customerID, int consumptionID, int rateID, Double amountDue, Date dueDate, String status, int generatedByUserID, int technicianID)
     {
         this.billID = billID;
         this.customerID = customerID;
@@ -46,9 +48,9 @@ public class Bill
 
     public void setAmountDue(Double amountDue) { this.amountDue = amountDue; }
 
-    public String getDueDate() { return dueDate; }
+    public Date getDueDate() { return dueDate; }
 
-    public void setDueDate(String dueDate) { this.dueDate = dueDate; }
+    public void setDueDate(Date dueDate) { this.dueDate = dueDate; }
 
     public String getStatus() { return status; }
 
