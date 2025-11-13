@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.OverdueNotice;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +13,12 @@ public class OverdueNoticeCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, notice.getBillID());
-            ps.setDate(2, notice.getOverdueDate());
-            ps.setDouble(3, notice.getPenaltyAmount());
-            ps.setDate(4, notice.getNoticeDate());
-            ps.setString(5, notice.getEscalationStatus());
-            ps.setInt(6, notice.getSentByUserID());
+            ps.setInt(1, notice.billID());
+            ps.setDate(2, notice.overdueDate());
+            ps.setDouble(3, notice.penaltyAmount());
+            ps.setDate(4, notice.noticeDate());
+            ps.setString(5, notice.escalationStatus());
+            ps.setInt(6, notice.sentByUserID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -85,13 +84,13 @@ public class OverdueNoticeCRUD
         String sql = "UPDATE OVERDUE_NOTICE SET BILL_ID = ?, OVERDUE_DATE = ?, PENALTY_AMOUNT = ?, escalation_status = ?, sent_by_user_id = ? WHERE NOTICE_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, notice.getBillID());
-            ps.setDate(2, notice.getOverdueDate());
-            ps.setDouble(3, notice.getPenaltyAmount());
-            ps.setDate(4, notice.getNoticeDate());
-            ps.setString(5, notice.getEscalationStatus());
-            ps.setInt(6, notice.getSentByUserID());
-            ps.setInt(7, notice.getNoticeID());
+            ps.setInt(1, notice.billID());
+            ps.setDate(2, notice.overdueDate());
+            ps.setDouble(3, notice.penaltyAmount());
+            ps.setDate(4, notice.noticeDate());
+            ps.setString(5, notice.escalationStatus());
+            ps.setInt(6, notice.sentByUserID());
+            ps.setInt(7, notice.noticeID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Rate;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +13,9 @@ public class RateCRUD
         String sql = "INSERT INTO RATE (UTILITY_TYPE_ID, RATE_PER_UNIT, EFFECTIVE_DATE) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, rate.getUtilityTypeId());
-            ps.setDouble(2, rate.getRatePerUnit());
-            ps.setDate(3, rate.getEffectiveDate());
+            ps.setLong(1, rate.utilityTypeID());
+            ps.setDouble(2, rate.ratePerUnit());
+            ps.setDate(3, rate.effectiveDate());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -78,10 +77,10 @@ public class RateCRUD
         String sql = "UPDATE RATE SET UTILITY_TYPE_ID = ?, RATE_PER_UNIT = ?, EFFECTIVE_DATE = ? WHERE RATE_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, rate.getUtilityTypeId());
-            ps.setDouble(2, rate.getRatePerUnit());
-            ps.setDate(3, rate.getEffectiveDate());
-            ps.setLong(4, rate.getRateId());
+            ps.setLong(1, rate.utilityTypeID());
+            ps.setDouble(2, rate.ratePerUnit());
+            ps.setDate(3, rate.effectiveDate());
+                ps.setLong(4, rate.rateID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Bill;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +13,14 @@ public class BillCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, bill.getConsumptionID());
-            ps.setInt(2, bill.getCustomerID());
-            ps.setInt(3, bill.getRateID());
-            ps.setDate(4, bill.getDueDate());
-            ps.setDouble(5, bill.getAmountDue());
-            ps.setString(6, bill.getStatus());
-            ps.setInt(7,bill.getGeneratedByUserID());
-            ps.setInt(8,bill.getTechnicianID());
+            ps.setInt(1, bill.consumptionID());
+            ps.setInt(2, bill.customerID());
+            ps.setInt(3, bill.rateID());
+            ps.setDate(4, bill.dueDate());
+            ps.setDouble(5, bill.amountDue());
+            ps.setString(6, bill.status());
+            ps.setInt(7,bill.generatedByUserID());
+            ps.setInt(8,bill.technicianID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -92,15 +91,15 @@ public class BillCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, bill.getConsumptionID());
-            ps.setInt(2, bill.getCustomerID());
-            ps.setInt(3, bill.getRateID());
-            ps.setDate(4, bill.getDueDate());
-            ps.setDouble(5, bill.getAmountDue());
-            ps.setString(6, bill.getStatus());
-            ps.setInt(7,bill.getGeneratedByUserID());
-            ps.setInt(8,bill.getTechnicianID());
-            ps.setInt(9, bill.getBillID());
+            ps.setInt(1, bill.consumptionID());
+            ps.setInt(2, bill.customerID());
+            ps.setInt(3, bill.rateID());
+            ps.setDate(4, bill.dueDate());
+            ps.setDouble(5, bill.amountDue());
+            ps.setString(6, bill.status());
+            ps.setInt(7,bill.generatedByUserID());
+            ps.setInt(8,bill.technicianID());
+            ps.setInt(9, bill.billID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

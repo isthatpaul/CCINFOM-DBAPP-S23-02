@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.PaymentReceipt;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +13,14 @@ public class PaymentReceiptCRUD {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, receipt.getBillID());
-            ps.setDate(2, receipt.getPaymentDate());
-            ps.setDouble(3, receipt.getAmountPaid());
-            ps.setString(4, receipt.getPaymentMethod());
-            ps.setString(5, receipt.getReceiptNumber());
-            ps.setInt(6, receipt.getProcessedByUserID());
-            ps.setInt(7, receipt.getCollectorID());
-            ps.setString(8, receipt.getStatus());
+            ps.setInt(1, receipt.billID());
+            ps.setDate(2, receipt.paymentDate());
+            ps.setDouble(3, receipt.amountPaid());
+            ps.setString(4, receipt.paymentMethod());
+            ps.setString(5, receipt.receiptNumber());
+            ps.setInt(6, receipt.processedByUserID());
+            ps.setInt(7, receipt.collectorID());
+            ps.setString(8, receipt.status());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -40,7 +39,7 @@ public class PaymentReceiptCRUD {
 
             while (rs.next()) {
                 PaymentReceipt pr = new PaymentReceipt(
-                        rs.getInt("RECEIPT_ID"),
+                        rs.getInt("PAYMENT_ID"),
                         rs.getInt("BILL_ID"),
                         rs.getDate("PAYMENT_DATE"),
                         rs.getDouble("AMOUNT_PAID"),
@@ -68,7 +67,7 @@ public class PaymentReceiptCRUD {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new PaymentReceipt(
-                            rs.getInt("RECEIPT_ID"),
+                            rs.getInt("PAYMENT_ID"),
                             rs.getInt("BILL_ID"),
                             rs.getDate("PAYMENT_DATE"),
                             rs.getDouble("AMOUNT_PAID"),
@@ -95,15 +94,15 @@ public class PaymentReceiptCRUD {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, receipt.getBillID());
-            ps.setDate(2, receipt.getPaymentDate());
-            ps.setDouble(3, receipt.getAmountPaid());
-            ps.setString(4, receipt.getPaymentMethod());
-            ps.setString(5, receipt.getReceiptNumber());
-            ps.setInt(6, receipt.getProcessedByUserID());
-            ps.setInt(7, receipt.getCollectorID());
-            ps.setString(8, receipt.getStatus());
-            ps.setInt(9, receipt.getPaymentID());
+            ps.setInt(1, receipt.billID());
+            ps.setDate(2, receipt.paymentDate());
+            ps.setDouble(3, receipt.amountPaid());
+            ps.setString(4, receipt.paymentMethod());
+            ps.setString(5, receipt.receiptNumber());
+            ps.setInt(6, receipt.processedByUserID());
+            ps.setInt(7, receipt.collectorID());
+            ps.setString(8, receipt.status());
+            ps.setInt(9, receipt.paymentID());
             ps.executeUpdate();;
             return true;
         } catch (SQLException e) {

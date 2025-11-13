@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Customer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,16 +13,16 @@ public class CustomerCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt  = conn.prepareStatement(sql))
         {
-            stmt.setString(1, customer.getAccountNumber());
-            stmt.setString(2, customer.getFirstName());
-            stmt.setString(3, customer.getLastName());
-            stmt.setString(4, customer.getStreet());
-            stmt.setString(5, customer.getCity());
-            stmt.setString(6, customer.getProvince());
-            stmt.setString(7, customer.getZipCode());
-            stmt.setString(8, customer.getContactNumber());
-            stmt.setDate(9, customer.getCreatedDate());
-            stmt.setString(10, customer.getBillingStatus());
+            stmt.setString(1, customer.accountNumber());
+            stmt.setString(2, customer.firstName());
+            stmt.setString(3, customer.lastName());
+            stmt.setString(4, customer.street());
+            stmt.setString(5, customer.city());
+            stmt.setString(6, customer.province());
+            stmt.setString(7, customer.zipCode());
+            stmt.setString(8, customer.contactNumber());
+            stmt.setDate(9, customer.createdDate());
+            stmt.setString(10, customer.billingStatus());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -95,17 +94,17 @@ public class CustomerCRUD
         String sql = "UPDATE Customer SET account_number=?, first_name=?, last_name=?, street=?, city=?, province=?, zip_code=?, contact_number=?, created_date=?, billing_status=? WHERE customer_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, customer.getAccountNumber());
-            stmt.setString(2, customer.getFirstName());
-            stmt.setString(3, customer.getLastName());
-            stmt.setString(4, customer.getStreet());
-            stmt.setString(5, customer.getCity());
-            stmt.setString(6, customer.getProvince());
-            stmt.setString(7, customer.getZipCode());
-            stmt.setString(8, customer.getContactNumber());
-            stmt.setDate(9, customer.getCreatedDate());
-            stmt.setString(10, customer.getBillingStatus());
-            stmt.setInt(11, customer.getCustomerID());
+            stmt.setString(1, customer.accountNumber());
+            stmt.setString(2, customer.firstName());
+            stmt.setString(3, customer.lastName());
+            stmt.setString(4, customer.street());
+            stmt.setString(5, customer.city());
+            stmt.setString(6, customer.province());
+            stmt.setString(7, customer.zipCode());
+            stmt.setString(8, customer.contactNumber());
+            stmt.setDate(9, customer.createdDate());
+            stmt.setString(10, customer.billingStatus());
+            stmt.setInt(11, customer.customerID());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {

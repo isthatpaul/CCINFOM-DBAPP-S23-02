@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Meter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +13,9 @@ public class MeterCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, meter.getUtilityTypeId());
-            ps.setString(2, meter.getMeterSerialNumber());
-            ps.setString(3, meter.getMeterStatus());
+            ps.setInt(1, meter.utilityTypeID());
+            ps.setString(2, meter.meterSerialNumber());
+            ps.setString(3, meter.meterStatus());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -75,10 +74,10 @@ public class MeterCRUD
         String sql = "UPDATE METER SET UTILITY_TYPE_ID = ?, METER_SERIAL_NUMBER = ?, METER_STATUS = ? WHERE METER_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, meter.getUtilityTypeId());
-            ps.setString(2, meter.getMeterSerialNumber());
-            ps.setString(3, meter.getMeterStatus());
-            ps.setLong(4, meter.getMeterId());
+            ps.setLong(1, meter.utilityTypeID());
+            ps.setString(2, meter.meterSerialNumber());
+            ps.setString(3, meter.meterStatus());
+            ps.setLong(4, meter.meterID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

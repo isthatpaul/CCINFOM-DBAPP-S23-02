@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.UtilityType;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +13,11 @@ public class UtilityTypeCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt  = conn.prepareStatement(sql))
         {
-            stmt.setString(1, utilityType.getUtilityTypeName());
-            stmt.setString(2, utilityType.getDescription());
-            stmt.setString(3, utilityType.getUnitOfMeasure());
-            stmt.setDate(4, utilityType.getCreatedDate());
-            stmt.setDate(5, utilityType.getModifiedDate());
+            stmt.setString(1, utilityType.utilityTypeName());
+            stmt.setString(2, utilityType.description());
+            stmt.setString(3, utilityType.unitOfMeasure());
+            stmt.setDate(4, utilityType.createdDate());
+            stmt.setDate(5, utilityType.modifiedDate());
             stmt.setBoolean(6, utilityType.isActive());
             stmt.executeUpdate();
             return true;
@@ -83,12 +82,13 @@ public class UtilityTypeCRUD
         String sql = "UPDATE REF_UTILITY_TYPE SET utility_type_id=?, utility_type_name=?, description=?, unit_of_measure=?, created_date=?, modified_date=? WHERE utility_type_id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, utilityType.getUtilityTypeName());
-            stmt.setString(2, utilityType.getDescription());
-            stmt.setString(3, utilityType.getUnitOfMeasure());
-            stmt.setDate(4, utilityType.getCreatedDate());
-            stmt.setDate(5, utilityType.getModifiedDate());
-            stmt.setInt(6, utilityType.getUtilityTypeID());
+            stmt.setString(1, utilityType.utilityTypeName());
+            stmt.setString(2, utilityType.description());
+            stmt.setString(3, utilityType.unitOfMeasure());
+            stmt.setDate(4, utilityType.createdDate());
+            stmt.setDate(5, utilityType.modifiedDate());
+            stmt.setInt(6, utilityType.utilityTypeID());
+            stmt.setBoolean(7, utilityType.isActive());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {

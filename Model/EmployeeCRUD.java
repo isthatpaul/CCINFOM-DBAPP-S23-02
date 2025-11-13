@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Employee;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +13,14 @@ public class EmployeeCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, employee.getFirstName());
-            ps.setString(2, employee.getLastName());
-            ps.setString(3, employee.getAddress());
-            ps.setString(4, employee.getContactNumber());
-            ps.setInt(5, employee.getDepartmentID());
-            ps.setString(6, employee.getPosition());
-            ps.setDate(7, employee.getHireDate());
-            ps.setDate(8, employee.getLastLoginDate());
+            ps.setString(1, employee.firstName());
+            ps.setString(2, employee.lastName());
+            ps.setString(3, employee.address());
+            ps.setString(4, employee.contactNumber());
+            ps.setInt(5, employee.departmentID());
+            ps.setString(6, employee.position());
+            ps.setDate(7, employee.hireDate());
+            ps.setDate(8, employee.lastLoginDate());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -92,15 +91,15 @@ public class EmployeeCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, employee.getFirstName());
-            ps.setString(2, employee.getLastName());
-            ps.setString(3, employee.getAddress());
-            ps.setString(4, employee.getContactNumber());
-            ps.setInt(5, employee.getDepartmentID());
-            ps.setString(6, employee.getPosition());
-            ps.setDate(7, employee.getHireDate());
-            ps.setDate(8, employee.getLastLoginDate());
-            ps.setInt(9, employee.getEmployeeID());
+            ps.setString(1, employee.firstName());
+            ps.setString(2, employee.lastName());
+            ps.setString(3, employee.address());
+            ps.setString(4, employee.contactNumber());
+            ps.setInt(5, employee.departmentID());
+            ps.setString(6, employee.position());
+            ps.setDate(7, employee.hireDate());
+            ps.setDate(8, employee.lastLoginDate());
+            ps.setInt(9, employee.employeeID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

@@ -2,52 +2,12 @@ package Model;
 
 import java.sql.Date;
 
-public class UtilityType
-{
-    private int utilityTypeID;
-    private String utilityTypeName;
-    private String description;
-    private String unitOfMeasure;
-    private Date createdDate;
-    private Date modifiedDate;
-    private boolean isActive = true;
-
-    public UtilityType(int utilityTypeID, String utilityTypeName, String description, String unitOfMeasure, Date createdDate, Date modifiedDate, boolean isActive)
-    {
-        this.utilityTypeID = utilityTypeID;
-        this.utilityTypeName = utilityTypeName;
-        this.description = description;
-        this.unitOfMeasure = unitOfMeasure;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
-
-    // getters and setters
-    public int getUtilityTypeID() { return utilityTypeID; }
-
-    public void setUtilityTypeID(int utilityTypeID) { this.utilityTypeID = utilityTypeID; }
-
-    public String getUtilityTypeName() { return utilityTypeName; }
-
-    public void setUtilityTypeName(String utilityTypeName) { this.utilityTypeName = utilityTypeName; }
-
-    public String getDescription() { return description; }
-
-    public void setDescription(String description) { this.description = description; }
-
-    public String getUnitOfMeasure() { return unitOfMeasure; }
-
-    public void setUnitOfMeasure(String unitOfMeasure) { this.unitOfMeasure = unitOfMeasure; }
-
-    public Date getCreatedDate() { return createdDate; }
-
-    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
-
-    public Date getModifiedDate() { return modifiedDate; }
-
-    public void setModifiedDate(Date modifiedDate) { this.modifiedDate = modifiedDate; }
-
-    public boolean isActive() { return isActive; }
-
-    public void setActive(boolean active) { isActive = active; }
-}
+public record UtilityType(
+        int utilityTypeID, // PK
+        String utilityTypeName,
+        String description,
+        String unitOfMeasure,
+        Date createdDate,
+        Date modifiedDate,
+        boolean isActive
+) {}

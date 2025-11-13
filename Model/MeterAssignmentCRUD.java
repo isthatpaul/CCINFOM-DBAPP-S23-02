@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +13,13 @@ public class MeterAssignmentCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, assign.getCustomerID());
-            ps.setInt(2, assign.getMeterID());
-            ps.setDate(3, assign.getAssignmentDate());
-            ps.setDate(4, assign.getInstallationDate());
-            ps.setInt(5, assign.getAssignedByUserID());
-            ps.setString(6, assign.getStatus());
-            ps.setDate(7, assign.getLastUpdated());
+            ps.setInt(1, assign.customerID());
+            ps.setInt(2, assign.meterID());
+            ps.setDate(3, assign.assignmentDate());
+            ps.setDate(4, assign.installationDate());
+            ps.setInt(5, assign.assignedByUserID());
+            ps.setString(6, assign.status());
+            ps.setDate(7, assign.lastUpdated());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -88,14 +87,14 @@ public class MeterAssignmentCRUD
         String sql = "UPDATE METER_ASSIGNMENT SET CUSTOMER_ID = ?, METER_ID = ?, ASSIGNMENT_DATE = ?, INSTALLATION_DATE=?, ASSIGNED_BY_USER_ID=?, STATUS = ?, LAST_UPDATED=? WHERE ASSIGNMENT_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, assign.getCustomerID());
-            ps.setInt(2, assign.getMeterID());
-            ps.setDate(3, assign.getAssignmentDate());
-            ps.setDate(4, assign.getInstallationDate());
-            ps.setInt(5, assign.getAssignedByUserID());
-            ps.setString(6, assign.getStatus());
-            ps.setDate(7, assign.getLastUpdated());
-            ps.setInt(8, assign.getAssignmentID());
+            ps.setInt(1, assign.customerID());
+            ps.setInt(2, assign.meterID());
+            ps.setDate(3, assign.assignmentDate());
+            ps.setDate(4, assign.installationDate());
+            ps.setInt(5, assign.assignedByUserID());
+            ps.setString(6, assign.status());
+            ps.setDate(7, assign.lastUpdated());
+            ps.setInt(8, assign.assignmentID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

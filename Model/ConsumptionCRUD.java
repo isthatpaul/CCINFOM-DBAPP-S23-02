@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Consumption;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +14,10 @@ public class ConsumptionCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, cons.getMeterId());
-            ps.setDouble(2, cons.getConsumptionValue());
-            ps.setDate(3, cons.getReadingDate());
-            ps.setDate(4, cons.getBillingPeriod());
+            ps.setInt(1, cons.meterID());
+            ps.setDouble(2, cons.consumptionValue());
+            ps.setDate(3, cons.readingDate());
+            ps.setDate(4, cons.billingPeriod());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -82,11 +81,11 @@ public class ConsumptionCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, cons.getMeterId());
-            ps.setDouble(2, cons.getConsumptionValue());
-            ps.setDate(3, cons.getReadingDate());
-            ps.setDate(4, cons.getBillingPeriod());
-            ps.setInt(5, cons.getConsumptionId());
+            ps.setInt(1, cons.meterID());
+            ps.setDouble(2, cons.consumptionValue());
+            ps.setDate(3, cons.readingDate());
+            ps.setDate(4, cons.billingPeriod());
+            ps.setInt(5, cons.consumptionID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

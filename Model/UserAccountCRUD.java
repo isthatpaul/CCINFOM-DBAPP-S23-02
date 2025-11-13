@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.UserAccount;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +15,11 @@ public class UserAccountCRUD {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, user.getEmployeeId());
-            ps.setString(2, user.getUsername());
-            ps.setString(3, user.getPasswordHash());
-            ps.setString(4, user.getRole());
-            ps.setString(5, user.getAssignedBranch());
+            ps.setInt(1, user.employeeID());
+            ps.setString(2, user.username());
+            ps.setString(3, user.passwordHash());
+            ps.setString(4, user.role());
+            ps.setString(5, user.assignedBranch());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -88,11 +87,12 @@ public class UserAccountCRUD {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, user.getEmployeeId());
-            ps.setString(2, user.getUsername());
-            ps.setString(3, user.getRole());
-            ps.setString(4, user.getAssignedBranch());
-            ps.setInt(5, user.getUserId());
+            ps.setInt(1, user.employeeID());
+            ps.setString(2, user.username());
+            ps.setString(3, user.passwordHash());
+            ps.setString(4, user.role());
+            ps.setString(5, user.assignedBranch());
+            ps.setInt(6, user.employeeID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

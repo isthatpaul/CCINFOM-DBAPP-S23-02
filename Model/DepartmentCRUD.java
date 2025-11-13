@@ -1,7 +1,6 @@
 package Model;
 
 import Database.DatabaseConnection;
-import Model.Department;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ public class DepartmentCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
-            ps.setString(1, department.getDepartmentName());
+            ps.setString(1, department.departmentName());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -71,8 +70,8 @@ public class DepartmentCRUD
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
-            ps.setString(1, department.getDepartmentName());
-            ps.setLong(2, department.getDepartmentId());
+            ps.setString(1, department.departmentName());
+            ps.setLong(2, department.departmentID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
