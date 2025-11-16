@@ -11,5 +11,5 @@ public record Bill(
         Date dueDate,
         String status, // e.g., 'UNPAID', 'PARTIALLY_PAID', 'OVERDUE', 'PAID'
         int generatedByStaffID, // FK to UserAccount
-        Integer technicianID // FK to Employee
+        int technicianID // FK to Employee
 ) {}

@@ -1,32 +1,43 @@
 package Model.DAO;
 
 import Database.DatabaseConnection;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import Reports.ConsumptionAnalysisReport;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Consumption analysis DAO: average consumption per branch over a date range.
+ */
 public class ConsumptionReportDAO {
 
-    // Get average consumption per branch for a given year
-    public Map<String, Double> getAverageConsumptionPerBranch(int year) {
-        Map<String, Double> avgConsumption = new HashMap<>();
+    // Keep the original method (month->year variant) if desired, but new variant accepts date range
+    public List<ConsumptionAnalysisReport> getAverageConsumptionPerBranch(Date startInclusive, Date endInclusive) {
+        List<ConsumptionAnalysisReport> avgConsumption = new ArrayList<>();
         String sql = """
             SELECT s.AssignedBranch, AVG(c.ConsumptionValue) AS avgConsumption
             FROM Consumption c
             JOIN MeterAssignment ma ON c.MeterID = ma.MeterID
             JOIN Staff s ON ma.AssignedByStaffID = s.StaffID
-            WHERE YEAR(c.ReadingDate) = ?
+            WHERE c.ReadingDate BETWEEN ? AND ?
             GROUP BY s.AssignedBranch
+            ORDER BY s.AssignedBranch
         """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, year);
+            ps.setDate(1, startInclusive);
+            ps.setDate(2, endInclusive);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    avgConsumption.put(rs.getString("AssignedBranch"), rs.getDouble("avgConsumption"));
+                    ConsumptionAnalysisReport r = new ConsumptionAnalysisReport(
+                            rs.getString("AssignedBranch"),
+                            rs.getDouble("avgConsumption")
+                    );
+                    avgConsumption.add(r);
                 }
             }
 

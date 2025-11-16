@@ -11,7 +11,7 @@ public record Employee(
         String province,
         String zipCode,
         String contactNumber,
-        Integer departmentID, // FK to Department
+        int departmentID, // FK to Department
         String position,
         Date hireDate,
         Date lastLoginDate
