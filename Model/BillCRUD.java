@@ -21,7 +21,8 @@ public class BillCRUD
             ps.setDate(5, bill.dueDate());
             ps.setString(6, bill.status());
             ps.setInt(7, bill.generatedByStaffID());
-            if (bill.technicianID() == null) {
+            // TechnicianID is optional: use 0 as sentinel -> store NULL
+            if (bill.technicianID() == 0) {
                 ps.setNull(8, Types.INTEGER);
             } else {
                 ps.setInt(8, bill.technicianID());
@@ -43,7 +44,8 @@ public class BillCRUD
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                Integer technician = rs.getObject("TechnicianID") != null ? rs.getInt("TechnicianID") : null;
+                // Read NULL as 0 sentinel for technicianID
+                int technician = (rs.getObject("TechnicianID") != null) ? rs.getInt("TechnicianID") : 0;
                 Bill b = new Bill(
                         rs.getInt("BillID"),
                         rs.getInt("CustomerID"),
@@ -72,7 +74,7 @@ public class BillCRUD
             ps.setInt(1, billId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Integer technician = rs.getObject("TechnicianID") != null ? rs.getInt("TechnicianID") : null;
+                    int technician = (rs.getObject("TechnicianID") != null) ? rs.getInt("TechnicianID") : 0;
                     return new Bill(
                             rs.getInt("BillID"),
                             rs.getInt("CustomerID"),
@@ -105,7 +107,8 @@ public class BillCRUD
             ps.setDate(5, bill.dueDate());
             ps.setString(6, bill.status());
             ps.setInt(7, bill.generatedByStaffID());
-            if (bill.technicianID() == null) {
+            // Optional technician ID handling (0 -> NULL)
+            if (bill.technicianID() == 0) {
                 ps.setNull(8, Types.INTEGER);
             } else {
                 ps.setInt(8, bill.technicianID());
