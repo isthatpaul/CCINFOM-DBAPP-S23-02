@@ -1,6 +1,7 @@
 package Model;
 
 import Database.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,23 +9,28 @@ import java.util.List;
 public class PaymentCRUD {
 
     // CREATE
-    public boolean addRecord(Payment receipt) {
-        String sql = "INSERT INTO PAYMENT_RECEIPT (BILL_ID, PAYMENT_DATE, AMOUNT_PAID, PAYMENT_METHOD, RECEIPT_NUMBER, PROCESSED_BY_USER_ID, COLLECTOR_ID, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public boolean addRecord(Payment payment) {
+        String sql = "INSERT INTO Payment (BillID, PaymentDate, AmountPaid, PaymentMethod, ReceiptNumber, ProcessedByStaffID, CollectorID, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, receipt.billID());
-            ps.setDate(2, receipt.paymentDate());
-            ps.setDouble(3, receipt.amountPaid());
-            ps.setString(4, receipt.paymentMethod());
-            ps.setString(5, receipt.receiptNumber());
-            ps.setInt(6, receipt.processedByUserID());
-            ps.setInt(7, receipt.collectorID());
-            ps.setString(8, receipt.status());
+            ps.setInt(1, payment.billID());
+            ps.setDate(2, payment.paymentDate());
+            ps.setDouble(3, payment.amountPaid());
+            ps.setString(4, payment.paymentMethod());
+            ps.setString(5, payment.receiptNumber());
+            ps.setInt(6, payment.processedByStaffID());
+            if (payment.collectorID() == 0) {
+                // If collectorID is optional and you use 0 as sentinel, consider using Integer in record.
+                ps.setNull(7, Types.INTEGER);
+            } else {
+                ps.setInt(7, payment.collectorID());
+            }
+            ps.setString(8, payment.status());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("PaymentReceipt addRecord error: " + e.getMessage());
+            System.err.println("Payment addRecord error: " + e.getMessage());
             return false;
         }
     }
@@ -32,96 +38,99 @@ public class PaymentCRUD {
     // READ ALL
     public List<Payment> getAllRecords() {
         List<Payment> list = new ArrayList<>();
-        String sql = "SELECT * FROM PAYMENT_RECEIPT";
+        String sql = "SELECT * FROM Payment";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                Payment pr = new Payment(
-                        rs.getInt("PAYMENT_ID"),
-                        rs.getInt("BILL_ID"),
-                        rs.getDate("PAYMENT_DATE"),
-                        rs.getDouble("AMOUNT_PAID"),
-                        rs.getString("PAYMENT_METHOD"),
-                        rs.getString("receipt_number"),
-                        rs.getInt("processed_by_user_id"),
-                        rs.getInt("collector_id"),
-                        rs.getString("status")
+                Integer collector = rs.getObject("CollectorID") != null ? rs.getInt("CollectorID") : 0;
+                Payment p = new Payment(
+                        rs.getInt("PaymentID"),
+                        rs.getInt("BillID"),
+                        rs.getDate("PaymentDate"),
+                        rs.getDouble("AmountPaid"),
+                        rs.getString("PaymentMethod"),
+                        rs.getString("ReceiptNumber"),
+                        rs.getInt("ProcessedByStaffID"),
+                        collector,
+                        rs.getString("Status")
                 );
-                list.add(pr);
+                list.add(p);
             }
         } catch (SQLException e) {
-            System.err.println("PaymentReceipt getAllRecords error: " + e.getMessage());
+            System.err.println("Payment getAllRecords error: " + e.getMessage());
         }
         return list;
     }
 
     // READ ONE
-    public Payment getRecordById(int receiptId) {
-        String sql = "SELECT * FROM PAYMENT_RECEIPT WHERE PAYMENT_ID = ?";
+    public Payment getRecordById(int paymentId) {
+        String sql = "SELECT * FROM Payment WHERE PaymentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, receiptId);
+            ps.setInt(1, paymentId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    Integer collector = rs.getObject("CollectorID") != null ? rs.getInt("CollectorID") : 0;
                     return new Payment(
-                            rs.getInt("PAYMENT_ID"),
-                            rs.getInt("BILL_ID"),
-                            rs.getDate("PAYMENT_DATE"),
-                            rs.getDouble("AMOUNT_PAID"),
-                            rs.getString("PAYMENT_METHOD"),
-                            rs.getString("receipt_number"),
-                            rs.getInt("processed_by_user_id"),
-                            rs.getInt("collector_id"),
-                            rs.getString("status")
+                            rs.getInt("PaymentID"),
+                            rs.getInt("BillID"),
+                            rs.getDate("PaymentDate"),
+                            rs.getDouble("AmountPaid"),
+                            rs.getString("PaymentMethod"),
+                            rs.getString("ReceiptNumber"),
+                            rs.getInt("ProcessedByStaffID"),
+                            collector,
+                            rs.getString("Status")
                     );
                 }
             }
         } catch (SQLException e) {
-            System.err.println("PaymentReceipt getRecordById error: " + e.getMessage());
+            System.err.println("Payment getRecordById error: " + e.getMessage());
         }
         return null;
     }
 
-    // UPDATE and DELETE are typically excluded for financial records (Immutability is best practice)
-    // I will include them here for full CRUD completeness, but they should be used with caution.
-
     // UPDATE
-    public boolean updateRecord(Payment receipt) {
-        String sql = "UPDATE PAYMENT_RECEIPT SET BILL_ID = ?, PAYMENT_DATE = ?, AMOUNT_PAID = ?, PAYMENT_METHOD = ?, RECEIPT_NUMBER = ?, PROCESSED_BY_USER_ID=?, COLLECTOR_ID=?, STATUS=? WHERE PAYMENT_ID = ?";
+    public boolean updateRecord(Payment payment) {
+        String sql = "UPDATE Payment SET BillID = ?, PaymentDate = ?, AmountPaid = ?, PaymentMethod = ?, ReceiptNumber = ?, ProcessedByStaffID = ?, CollectorID = ?, Status = ? WHERE PaymentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, receipt.billID());
-            ps.setDate(2, receipt.paymentDate());
-            ps.setDouble(3, receipt.amountPaid());
-            ps.setString(4, receipt.paymentMethod());
-            ps.setString(5, receipt.receiptNumber());
-            ps.setInt(6, receipt.processedByUserID());
-            ps.setInt(7, receipt.collectorID());
-            ps.setString(8, receipt.status());
-            ps.setInt(9, receipt.paymentID());
-            ps.executeUpdate();;
+            ps.setInt(1, payment.billID());
+            ps.setDate(2, payment.paymentDate());
+            ps.setDouble(3, payment.amountPaid());
+            ps.setString(4, payment.paymentMethod());
+            ps.setString(5, payment.receiptNumber());
+            ps.setInt(6, payment.processedByStaffID());
+            if (payment.collectorID() == 0) {
+                ps.setNull(7, Types.INTEGER);
+            } else {
+                ps.setInt(7, payment.collectorID());
+            }
+            ps.setString(8, payment.status());
+            ps.setInt(9, payment.paymentID());
+            ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("PaymentReceipt updateRecord error: " + e.getMessage());
+            System.err.println("Payment updateRecord error: " + e.getMessage());
             return false;
         }
     }
 
     // DELETE
     public boolean deleteRecord(int paymentID) {
-        String sql = "DELETE FROM PAYMENT_RECEIPT WHERE PAYMENT_ID = ?";
+        String sql = "DELETE FROM Payment WHERE PaymentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, paymentID);
+            ps.setInt(1, paymentID);
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("PaymentReceipt deleteRecord error: " + e.getMessage());
+            System.err.println("Payment deleteRecord error: " + e.getMessage());
             return false;
         }
     }

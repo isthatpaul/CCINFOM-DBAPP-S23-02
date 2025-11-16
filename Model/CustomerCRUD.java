@@ -1,6 +1,7 @@
 package Model;
 
 import Database.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ public class CustomerCRUD
 {
     // CREATE
     public boolean addRecord(Customer customer) {
-        String sql = "INSERT INTO Customer (accountnumber, firstname, lastname, street, city, province, zipcode, contactnumber, createddate, billingstatus) VALUES (?, ?, ?, ?, ?, ?, ? , ?, ?, ?)";
+        String sql = "INSERT INTO Customer (AccountNumber, FirstName, LastName, Street, City, Province, ZipCode, ContactNumber, CreatedDate, BillingStatus) VALUES (?, ?, ?, ?, ?, ?, ? , ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt  = conn.prepareStatement(sql))
         {
@@ -26,7 +27,7 @@ public class CustomerCRUD
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("addRecord error: " + e.getMessage());
+            System.err.println("Customer addRecord error: " + e.getMessage());
             return false;
         }
     }
@@ -41,57 +42,58 @@ public class CustomerCRUD
 
             while (rs.next()) {
                 Customer c = new Customer(
-                        rs.getInt("customer_id"),
-                        rs.getString("account_number"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("street"),
-                        rs.getString("city"),
-                        rs.getString("province"),
-                        rs.getString("zip_code"),
-                        rs.getString("contact_number"),
-                        rs.getDate("created_date"),
-                        rs.getString("billing_status")
+                        rs.getInt("CustomerID"),
+                        rs.getString("AccountNumber"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Street"),
+                        rs.getString("City"),
+                        rs.getString("Province"),
+                        rs.getString("ZipCode"),
+                        rs.getString("ContactNumber"),
+                        rs.getDate("CreatedDate"),
+                        rs.getString("BillingStatus")
                 );
                 CustomerList.add(c);
             }
         } catch (SQLException e) {
-            System.err.println("getAllRecords error: " + e.getMessage());
+            System.err.println("Customer getAllRecords error: " + e.getMessage());
         }
         return CustomerList;
     }
 
     // READ ONE
     public Customer getRecordById(int id) {
-        String sql = "SELECT * FROM Customer WHERE customerid = ?";
+        String sql = "SELECT * FROM Customer WHERE CustomerID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new Customer(
-                        rs.getInt("customer_id"),
-                        rs.getString("account_number"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("street"),
-                        rs.getString("city"),
-                        rs.getString("province"),
-                        rs.getString("zip_code"),
-                        rs.getString("contact_number"),
-                        rs.getDate("created_date"),
-                        rs.getString("billing_status")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Customer(
+                            rs.getInt("CustomerID"),
+                            rs.getString("AccountNumber"),
+                            rs.getString("FirstName"),
+                            rs.getString("LastName"),
+                            rs.getString("Street"),
+                            rs.getString("City"),
+                            rs.getString("Province"),
+                            rs.getString("ZipCode"),
+                            rs.getString("ContactNumber"),
+                            rs.getDate("CreatedDate"),
+                            rs.getString("BillingStatus")
+                    );
+                }
             }
         } catch (Exception e) {
-            System.err.println("getRecordById error: " + e.getMessage());
+            System.err.println("Customer getRecordById error: " + e.getMessage());
         }
         return null;
     }
 
     // UPDATE
     public boolean updateRecord(Customer customer) {
-        String sql = "UPDATE Customer SET accountnumber=?, firstname=?, lastname=?, street=?, city=?, province=?, zipcode=?, contactnumber=?, createddate=?, billingstatus=? WHERE customerid = ?";
+        String sql = "UPDATE Customer SET AccountNumber = ?, FirstName = ?, LastName = ?, Street = ?, City = ?, Province = ?, ZipCode = ?, ContactNumber = ?, CreatedDate = ?, BillingStatus = ? WHERE CustomerID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, customer.accountNumber());
@@ -108,21 +110,21 @@ public class CustomerCRUD
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("updateRecord error: " + e.getMessage());
+            System.err.println("Customer updateRecord error: " + e.getMessage());
             return false;
         }
     }
 
     // DELETE
     public boolean deleteRecord(int id) {
-        String sql = "DELETE FROM Customer WHERE customerid=?";
+        String sql = "DELETE FROM Customer WHERE CustomerID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.err.println("deleteRecord error: " + e.getMessage());
+            System.err.println("Customer deleteRecord error: " + e.getMessage());
             return false;
         }
     }

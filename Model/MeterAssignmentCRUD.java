@@ -1,6 +1,7 @@
 package Model;
 
 import Database.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,7 @@ public class MeterAssignmentCRUD {
 
     // CREATE
     public boolean addRecord(MeterAssignment assign) {
-        String sql = "INSERT INTO METERASSIGNMENT " +
-                "(CUSTOMERID, METERID, ASSIGNMENTDATE, INSTALLATIONDATE, " +
-                "ASSIGNEDBYSTAFFID, STATUS, LASTUPDATED) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO MeterAssignment (CustomerID, MeterID, AssignmentDate, InstallationDate, AssignedByStaffID, Status, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -34,21 +33,21 @@ public class MeterAssignmentCRUD {
     // READ ALL
     public List<MeterAssignment> getAllRecords() {
         List<MeterAssignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM METERASSIGNMENT";
+        String sql = "SELECT * FROM MeterAssignment";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 MeterAssignment ma = new MeterAssignment(
-                        rs.getInt("ASSIGNMENT_ID"),
-                        rs.getInt("CUSTOMER_ID"),
-                        rs.getInt("METER_ID"),
-                        rs.getDate("ASSIGNMENT_DATE"),
-                        rs.getDate("INSTALLATION_DATE"),
-                        rs.getInt("ASSIGNED_BY_USER_ID"),
-                        rs.getString("STATUS"),
-                        rs.getDate("LAST_UPDATED")
+                        rs.getInt("AssignmentID"),
+                        rs.getInt("CustomerID"),
+                        rs.getInt("MeterID"),
+                        rs.getDate("AssignmentDate"),
+                        rs.getDate("InstallationDate"),
+                        rs.getInt("AssignedByStaffID"),
+                        rs.getString("Status"),
+                        rs.getDate("LastUpdated")
                 );
                 list.add(ma);
             }
@@ -59,9 +58,9 @@ public class MeterAssignmentCRUD {
         return list;
     }
 
-    // READ ONE (by primary key ASSIGNMENT_ID)
+    // READ ONE (by primary key AssignmentID)
     public MeterAssignment getRecordById(int assignmentID) {
-        String sql = "SELECT * FROM METERASSIGNMENT WHERE ASSIGNMENTID = ?";
+        String sql = "SELECT * FROM MeterAssignment WHERE AssignmentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -70,14 +69,14 @@ public class MeterAssignmentCRUD {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new MeterAssignment(
-                            rs.getInt("ASSIGNMENT_ID"),
-                            rs.getInt("CUSTOMER_ID"),
-                            rs.getInt("METER_ID"),
-                            rs.getDate("ASSIGNMENT_DATE"),
-                            rs.getDate("INSTALLATION_DATE"),
-                            rs.getInt("ASSIGNED_BY_USER_ID"),
-                            rs.getString("STATUS"),
-                            rs.getDate("LAST_UPDATED")
+                            rs.getInt("AssignmentID"),
+                            rs.getInt("CustomerID"),
+                            rs.getInt("MeterID"),
+                            rs.getDate("AssignmentDate"),
+                            rs.getDate("InstallationDate"),
+                            rs.getInt("AssignedByStaffID"),
+                            rs.getString("Status"),
+                            rs.getDate("LastUpdated")
                     );
                 }
             }
@@ -90,10 +89,7 @@ public class MeterAssignmentCRUD {
 
     // UPDATE
     public boolean updateRecord(MeterAssignment assign) {
-        String sql = "UPDATE METERASSIGNMENT SET " +
-                "CUSTOMERID = ?, METERID = ?, ASSIGNMENTDATE = ?, INSTALLATIONDATE = ?, " +
-                "ASSIGNEDBYStaffID = ?, STATUS = ?, LASTUPDATED = ? " +
-                "WHERE ASSIGNMENTID = ?";
+        String sql = "UPDATE MeterAssignment SET CustomerID = ?, MeterID = ?, AssignmentDate = ?, InstallationDate = ?, AssignedByStaffID = ?, Status = ?, LastUpdated = ? WHERE AssignmentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -117,7 +113,7 @@ public class MeterAssignmentCRUD {
 
     // DELETE
     public boolean deleteRecord(int assignmentID) {
-        String sql = "DELETE FROM METERASSIGNMENT WHERE ASSIGNMENTID = ?";
+        String sql = "DELETE FROM MeterAssignment WHERE AssignmentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

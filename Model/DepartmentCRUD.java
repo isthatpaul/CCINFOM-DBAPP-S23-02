@@ -1,6 +1,7 @@
 package Model;
 
 import Database.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ public class DepartmentCRUD
 {
     // CREATE
     public boolean addRecord(Department department) {
-        String sql = "INSERT INTO DEPARTMENT (DEPARTMENTNAME, Description) VALUES (?, ?)";
+        String sql = "INSERT INTO Department (DepartmentName, Description) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
@@ -26,16 +27,16 @@ public class DepartmentCRUD
     // READ ALL
     public List<Department> getAllRecords() {
         List<Department> list = new ArrayList<>();
-        String sql = "SELECT * FROM DEPARTMENT";
+        String sql = "SELECT * FROM Department";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql))
         {
             while (rs.next()) {
                 Department d = new Department(
-                        rs.getInt("DEPARTMENT_ID"),
-                        rs.getString("DEPARTMENT_NAME"),
-                        rs.getString("DESCRIPTION")
+                        rs.getInt("DepartmentID"),
+                        rs.getString("DepartmentName"),
+                        rs.getString("Description")
                 );
                 list.add(d);
             }
@@ -47,7 +48,7 @@ public class DepartmentCRUD
 
     // READ ONE
     public Department getRecordById(int departmentId) {
-        String sql = "SELECT * FROM DEPARTMENT WHERE DEPARTMENTID = ?";
+        String sql = "SELECT * FROM Department WHERE DepartmentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
@@ -55,9 +56,9 @@ public class DepartmentCRUD
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Department(
-                            rs.getInt("DEPARTMENT_ID"),
-                            rs.getString("DEPARTMENT_NAME"),
-                            rs.getString("DESCRIPTION")
+                            rs.getInt("DepartmentID"),
+                            rs.getString("DepartmentName"),
+                            rs.getString("Description")
                     );
                 }
             }
@@ -69,13 +70,13 @@ public class DepartmentCRUD
 
     // UPDATE
     public boolean updateRecord(Department department) {
-        String sql = "UPDATE DEPARTMENT SET DEPARTMENTNAME=?, Description=? WHERE DEPARTMENTID=?";
+        String sql = "UPDATE Department SET DepartmentName = ?, Description = ? WHERE DepartmentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
             ps.setString(1, department.departmentName());
-            ps.setLong(2, department.departmentID());
             ps.setString(2, department.description());
+            ps.setInt(3, department.departmentID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -86,10 +87,10 @@ public class DepartmentCRUD
 
     // DELETE
     public boolean deleteRecord(int departmentId) {
-        String sql = "DELETE FROM DEPARTMENT WHERE DEPARTMENTID=?";
+        String sql = "DELETE FROM Department WHERE DepartmentID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, departmentId);
+            ps.setInt(1, departmentId);
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

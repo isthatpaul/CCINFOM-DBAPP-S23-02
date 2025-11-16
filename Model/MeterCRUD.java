@@ -1,6 +1,7 @@
 package Model;
 
 import Database.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +10,15 @@ public class MeterCRUD
 {
     // CREATE
     public boolean addRecord(Meter meter) {
-        String sql = "INSERT INTO METER (UTILITYTYPEID, METERSERIALNUMBER, METERSTATUS) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Meter (UtilityTypeID, MeterSerialNumber, MeterStatus) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, meter.utilityTypeID());
+            if (meter.utilityTypeID() == 0) {
+                ps.setNull(1, Types.INTEGER);
+            } else {
+                ps.setInt(1, meter.utilityTypeID());
+            }
             ps.setString(2, meter.meterSerialNumber());
             ps.setString(3, meter.meterStatus());
             ps.executeUpdate();
@@ -27,17 +32,17 @@ public class MeterCRUD
     // READ ALL
     public List<Meter> getAllRecords() {
         List<Meter> list = new ArrayList<>();
-        String sql = "SELECT * FROM METER";
+        String sql = "SELECT * FROM Meter";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 Meter m = new Meter(
-                        rs.getInt("METER_ID"),
-                        rs.getInt("UTILITY_TYPE_ID"),
-                        rs.getString("METER_SERIAL_NUMBER"),
-                        rs.getString("METER_STATUS")
+                        rs.getInt("MeterID"),
+                        rs.getInt("UtilityTypeID"),
+                        rs.getString("MeterSerialNumber"),
+                        rs.getString("MeterStatus")
                 );
                 list.add(m);
             }
@@ -49,17 +54,17 @@ public class MeterCRUD
 
     // READ ONE
     public Meter getRecordById(int meterId) {
-        String sql = "SELECT * FROM METER WHERE METERID = ?";
+        String sql = "SELECT * FROM Meter WHERE MeterID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, meterId);
+            ps.setInt(1, meterId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Meter(
-                            rs.getInt("METER_ID"),
-                            rs.getInt("UTILITY_TYPE_ID"),
-                            rs.getString("METER_SERIAL_NUMBER"),
-                            rs.getString("METER_STATUS")
+                            rs.getInt("MeterID"),
+                            rs.getInt("UtilityTypeID"),
+                            rs.getString("MeterSerialNumber"),
+                            rs.getString("MeterStatus")
                     );
                 }
             }
@@ -71,13 +76,17 @@ public class MeterCRUD
 
     // UPDATE
     public boolean updateRecord(Meter meter) {
-        String sql = "UPDATE METER SET UTILITYTYPEID = ?, METERSERIALNUMBER = ?, METERSTATUS = ? WHERE METERID = ?";
+        String sql = "UPDATE Meter SET UtilityTypeID = ?, MeterSerialNumber = ?, MeterStatus = ? WHERE MeterID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, meter.utilityTypeID());
+            if (meter.utilityTypeID() == 0) {
+                ps.setNull(1, Types.INTEGER);
+            } else {
+                ps.setInt(1, meter.utilityTypeID());
+            }
             ps.setString(2, meter.meterSerialNumber());
             ps.setString(3, meter.meterStatus());
-            ps.setLong(4, meter.meterID());
+            ps.setInt(4, meter.meterID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -88,10 +97,10 @@ public class MeterCRUD
 
     // DELETE
     public boolean deleteRecord(int meterId) {
-        String sql = "DELETE FROM METER WHERE METERID = ?";
+        String sql = "DELETE FROM Meter WHERE MeterID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, meterId);
+            ps.setInt(1, meterId);
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {

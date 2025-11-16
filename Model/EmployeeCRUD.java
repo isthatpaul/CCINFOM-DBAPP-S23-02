@@ -1,6 +1,7 @@
 package Model;
 
 import Database.DatabaseConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,24 +10,19 @@ public class EmployeeCRUD {
 
     // CREATE
     public boolean addRecord(Employee employee) {
-        String sql = "INSERT INTO EMPLOYEE " +
-                "(FIRSTNAME, LASTNAME, STREET, CITY, PROVINCE, ZIPCODE, CONTACTNUMBER, " +
-                "DEPARTMENTID, POSITION, HIREDATE, LASTLOGINDATE) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Employee (DepartmentID, FirstName, LastName, Street, City, Province, ZipCode, ContactNumber, Position, HireDate, LastLoginDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, employee.firstName());
-            ps.setString(2, employee.lastName());
-            ps.setString(3, employee.street());
-            ps.setString(4, employee.city());
-            ps.setString(5, employee.province());
-            ps.setString(6, employee.zipCode());
-            ps.setString(7, employee.contactNumber());
-            ps.setInt(8, employee.departmentID());
+            ps.setInt(1, employee.departmentID());
+            ps.setString(2, employee.firstName());
+            ps.setString(3, employee.lastName());
+            ps.setString(4, employee.street());
+            ps.setString(5, employee.city());
+            ps.setString(6, employee.province());
+            ps.setString(7, employee.zipCode());
+            ps.setString(8, employee.contactNumber());
             ps.setString(9, employee.position());
-
-            // Correct order
             ps.setDate(10, employee.hireDate());
             ps.setDate(11, employee.lastLoginDate());
 
@@ -41,7 +37,7 @@ public class EmployeeCRUD {
     // READ ALL
     public List<Employee> getAllRecords() {
         List<Employee> list = new ArrayList<>();
-        String sql = "SELECT * FROM EMPLOYEE";
+        String sql = "SELECT * FROM Employee";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
@@ -49,18 +45,18 @@ public class EmployeeCRUD {
 
             while (rs.next()) {
                 Employee e = new Employee(
-                        rs.getInt("EMPLOYEE_ID"),
-                        rs.getString("FIRSTNAME"),
-                        rs.getString("LASTNAME"),
-                        rs.getString("STREET"),
-                        rs.getString("CITY"),
-                        rs.getString("PROVINCE"),
-                        rs.getString("ZIPCODE"),
-                        rs.getString("CONTACTNUMBER"),
-                        rs.getInt("DEPARTMENTID"),
-                        rs.getString("POSITION"),
-                        rs.getDate("HIREDATE"),
-                        rs.getDate("LASTLOGINDATE")
+                        rs.getInt("EmployeeID"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Street"),
+                        rs.getString("City"),
+                        rs.getString("Province"),
+                        rs.getString("ZipCode"),
+                        rs.getString("ContactNumber"),
+                        rs.getInt("DepartmentID"),
+                        rs.getString("Position"),
+                        rs.getDate("HireDate"),
+                        rs.getDate("LastLoginDate")
                 );
                 list.add(e);
             }
@@ -73,7 +69,7 @@ public class EmployeeCRUD {
 
     // READ ONE
     public Employee getRecordById(int employeeID) {
-        String sql = "SELECT * FROM EMPLOYEE WHERE EMPLOYEEID = ?";
+        String sql = "SELECT * FROM Employee WHERE EmployeeID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -83,18 +79,18 @@ public class EmployeeCRUD {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new Employee(
-                            rs.getInt("EMPLOYEE_ID"),
-                            rs.getString("FIRSTNAME"),
-                            rs.getString("LASTNAME"),
-                            rs.getString("STREET"),
-                            rs.getString("CITY"),
-                            rs.getString("PROVINCE"),
-                            rs.getString("ZIPCODE"),
-                            rs.getString("CONTACTNUMBER"),
-                            rs.getInt("DEPARTMENTID"),
-                            rs.getString("POSITION"),
-                            rs.getDate("HIREDATE"),
-                            rs.getDate("LASTLOGINDATE")
+                            rs.getInt("EmployeeID"),
+                            rs.getString("FirstName"),
+                            rs.getString("LastName"),
+                            rs.getString("Street"),
+                            rs.getString("City"),
+                            rs.getString("Province"),
+                            rs.getString("ZipCode"),
+                            rs.getString("ContactNumber"),
+                            rs.getInt("DepartmentID"),
+                            rs.getString("Position"),
+                            rs.getDate("HireDate"),
+                            rs.getDate("LastLoginDate")
                     );
                 }
             }
@@ -108,22 +104,19 @@ public class EmployeeCRUD {
 
     // UPDATE
     public boolean updateRecord(Employee employee) {
-        String sql = "UPDATE EMPLOYEE SET " +
-                "FIRSTNAME=?, LASTNAME=?, STREET=?, CITY=?, PROVINCE=?, ZIPCODE=?, " +
-                "CONTACTNUMBER=?, DEPARTMENTID=?, POSITION=?, HIREDATE=?, LASTLOGINDATE=? " +
-                "WHERE EMPLOYEEID=?";
+        String sql = "UPDATE Employee SET DepartmentID = ?, FirstName = ?, LastName = ?, Street = ?, City = ?, Province = ?, ZipCode = ?, ContactNumber = ?, Position = ?, HireDate = ?, LastLoginDate = ? WHERE EmployeeID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, employee.firstName());
-            ps.setString(2, employee.lastName());
-            ps.setString(3, employee.street());
-            ps.setString(4, employee.city());
-            ps.setString(5, employee.province());
-            ps.setString(6, employee.zipCode());
-            ps.setString(7, employee.contactNumber());
-            ps.setInt(8, employee.departmentID());
+            ps.setInt(1, employee.departmentID());
+            ps.setString(2, employee.firstName());
+            ps.setString(3, employee.lastName());
+            ps.setString(4, employee.street());
+            ps.setString(5, employee.city());
+            ps.setString(6, employee.province());
+            ps.setString(7, employee.zipCode());
+            ps.setString(8, employee.contactNumber());
             ps.setString(9, employee.position());
             ps.setDate(10, employee.hireDate());
             ps.setDate(11, employee.lastLoginDate());
@@ -140,7 +133,7 @@ public class EmployeeCRUD {
 
     // DELETE
     public boolean deleteRecord(int employeeID) {
-        String sql = "DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ?";
+        String sql = "DELETE FROM Employee WHERE EmployeeID = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
