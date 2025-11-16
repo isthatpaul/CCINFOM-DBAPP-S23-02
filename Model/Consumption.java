@@ -6,6 +6,5 @@ public record Consumption(
         int consumptionID, // PK
         int meterID, // FK to Meter
         Double consumptionValue,
-        Date readingDate,
-        Date billingPeriod
+        Date readingDate
 ) {}

@@ -9,7 +9,7 @@ public class BillCRUD
 {
     // CREATE
     public boolean addRecord(Bill bill) {
-        String sql = "INSERT INTO BILL (CONSUMPTION_ID, CUSTOMER_ID, RATE_ID, DUE_DATE, AMOUNT_DUE, STATUS, GENERATED_BY_USER_ID, TECHNICIAN_ID) VALUES (?, ?, ?, ?, ?, ?, ? , ?)";
+        String sql = "INSERT INTO BILL (CONSUMPTIONID, CUSTOMERID, RATEID, DUEDATE, AMOUNTDUE, STATUS, GENERATEDBYSTAFFID, TECHNICIANID) VALUES (?, ?, ?, ?, ?, ?, ? , ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -19,7 +19,7 @@ public class BillCRUD
             ps.setDate(4, bill.dueDate());
             ps.setDouble(5, bill.amountDue());
             ps.setString(6, bill.status());
-            ps.setInt(7,bill.generatedByUserID());
+            ps.setInt(7,bill.generatedByStaffID());
             ps.setInt(8,bill.technicianID());
             ps.executeUpdate();
             return true;
@@ -87,7 +87,7 @@ public class BillCRUD
 
     // UPDATE
     public boolean updateRecord(Bill bill) {
-        String sql = "UPDATE BILL SET CONSUMPTION_ID = ?, CUSTOMER_ID = ?, RATE_ID = ?, DUE_DATE = ?, AMOUNT_DUE = ?, STATUS = ?, GENERATED_BY_USER_ID = ?, TECHNICIAN_ID=? WHERE BILL_ID = ?";
+        String sql = "UPDATE BILL SET CONSUMPTIONID = ?, CUSTOMERID = ?, RATEID = ?, DUEDATE = ?, AMOUNTDUE = ?, STATUS = ?, GENERATEDBYSTAFFID = ?, TECHNICIANID=? WHERE BILLID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -97,7 +97,7 @@ public class BillCRUD
             ps.setDate(4, bill.dueDate());
             ps.setDouble(5, bill.amountDue());
             ps.setString(6, bill.status());
-            ps.setInt(7,bill.generatedByUserID());
+            ps.setInt(7,bill.generatedByStaffID());
             ps.setInt(8,bill.technicianID());
             ps.setInt(9, bill.billID());
             ps.executeUpdate();
@@ -110,7 +110,7 @@ public class BillCRUD
 
     // DELETE
     public boolean deleteRecord(int billId) {
-        String sql = "DELETE FROM BILL WHERE BILL_ID = ?";
+        String sql = "DELETE FROM BILL WHERE BILLID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

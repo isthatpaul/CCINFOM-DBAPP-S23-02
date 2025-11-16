@@ -8,7 +8,7 @@ public record MeterAssignment(
         int meterID, // FK to Meter
         Date assignmentDate,
         Date installationDate,
-        int  assignedByUserID,
+        int  assignedByStaffID,
         String status, // e.g., 'ACTIVE', 'INACTIVE'
         Date lastUpdated
 ) {}

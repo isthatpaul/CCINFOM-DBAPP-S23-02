@@ -9,7 +9,7 @@ public class UtilityTypeCRUD
 {
     // CREATE
     public boolean addRecord(UtilityType utilityType) {
-        String sql = "INSERT INTO REF_UTILITY_TYPE (UTILITY_TYPE_NAME, DESCRIPTION, UNIT_OF_MEASURE, CREATED_DATE, MODIFIED_DATE, IS_ACTIVE) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO UTILITYTYPE (UTILITYTYPENAME, DESCRIPTION, UNITOFMEASURE, CREATEDDATE, MODIFIEDDATE, ISACTIVE) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt  = conn.prepareStatement(sql))
         {
@@ -30,7 +30,7 @@ public class UtilityTypeCRUD
     // READ ALL
     public List<UtilityType> getAllRecords() {
         List<UtilityType> utilityTypeList = new ArrayList<>();
-        String sql = "SELECT * FROM REF_UTILITY_TYPE";
+        String sql = "SELECT * FROM UTILITYTYPE";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -55,7 +55,7 @@ public class UtilityTypeCRUD
 
     // READ ONE
     public UtilityType getRecordById(int id) {
-        String sql = "SELECT * FROM REF_UTILITY_TYPE WHERE utility_type_id = ?";
+        String sql = "SELECT * FROM UTILITYTYPE WHERE utilitytypeid = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -79,7 +79,7 @@ public class UtilityTypeCRUD
 
     // UPDATE
     public boolean updateRecord(UtilityType utilityType) {
-        String sql = "UPDATE REF_UTILITY_TYPE SET utility_type_id=?, utility_type_name=?, description=?, unit_of_measure=?, created_date=?, modified_date=? WHERE utility_type_id=?";
+        String sql = "UPDATE UTILITYTYPE SET utilitytypeid=?, utilitytypename=?, description=?, unitofmeasure=?, createddate=?, modifieddate=? WHERE utilitytypeid=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, utilityType.utilityTypeName());
@@ -99,7 +99,7 @@ public class UtilityTypeCRUD
 
     // DELETE
     public boolean deleteRecord(int id) {
-        String sql = "DELETE FROM REF_UTILITY_TYPE WHERE utility_type_id=?";
+        String sql = "DELETE FROM UTILITYTYPE WHERE utilitytypeid=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);

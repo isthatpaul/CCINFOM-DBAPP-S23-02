@@ -9,5 +9,5 @@ public record OverdueNotice(
         Double penaltyAmount,
         Date noticeDate,
         String escalationStatus,
-        int sentByUserID
+        int sentByStaffID
 ) {}

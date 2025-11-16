@@ -2,5 +2,6 @@ package Model;
 
 public record Department(
         int departmentID, // PK
-        String departmentName
+        String departmentName,
+        String description
 ) {}

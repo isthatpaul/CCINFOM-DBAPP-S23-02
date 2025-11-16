@@ -10,14 +10,13 @@ public class ConsumptionCRUD
 
     // CREATE
     public boolean addRecord(Consumption cons) {
-        String sql = "INSERT INTO CONSUMPTION (METER_ID, CONSUMPTION_VALUE, READING_DATE, BILLING_PERIOD) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO CONSUMPTION (METERID, CONSUMPTIONVALUE, READINGDATE) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, cons.meterID());
             ps.setDouble(2, cons.consumptionValue());
             ps.setDate(3, cons.readingDate());
-            ps.setDate(4, cons.billingPeriod());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -40,8 +39,7 @@ public class ConsumptionCRUD
                         rs.getInt("CONSUMPTION_ID"),
                         rs.getInt("METER_ID"),
                         rs.getDouble("CONSUMPTION_VALUE"),
-                        rs.getDate("READING_DATE"),
-                        rs.getDate("BILLING_PERIOD")
+                        rs.getDate("READING_DATE")
                 );
                 list.add(c);
             }
@@ -53,7 +51,7 @@ public class ConsumptionCRUD
 
     // READ ONE
     public Consumption getRecordById(int consumptionId) {
-        String sql = "SELECT * FROM CONSUMPTION WHERE CONSUMPTION_ID = ?";
+        String sql = "SELECT * FROM CONSUMPTION WHERE CONSUMPTIONID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -64,8 +62,7 @@ public class ConsumptionCRUD
                             rs.getInt("CONSUMPTION_ID"),
                             rs.getInt("METER_ID"),
                             rs.getDouble("CONSUMPTION_VALUE"),
-                            rs.getDate("READING_DATE"),
-                            rs.getDate("BILLING_PERIOD")
+                            rs.getDate("READING_DATE")
                     );
                 }
             }
@@ -77,15 +74,14 @@ public class ConsumptionCRUD
 
     // UPDATE
     public boolean updateRecord(Consumption cons) {
-        String sql = "UPDATE CONSUMPTION SET METER_ID = ?, CONSUMPTION_VALUE = ?, READING_DATE = ?, BILLING_PERIOD = ? WHERE CONSUMPTION_ID = ?";
+        String sql = "UPDATE CONSUMPTION SET METERID = ?, CONSUMPTIONVALUE = ?, READINGDATE = ?, BILLINGPERIOD = ? WHERE CONSUMPTIONID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, cons.meterID());
             ps.setDouble(2, cons.consumptionValue());
             ps.setDate(3, cons.readingDate());
-            ps.setDate(4, cons.billingPeriod());
-            ps.setInt(5, cons.consumptionID());
+            ps.setInt(4, cons.consumptionID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -96,7 +92,7 @@ public class ConsumptionCRUD
 
     // DELETE
     public boolean deleteRecord(int consumptionId) {
-        String sql = "DELETE FROM CONSUMPTION WHERE CONSUMPTION_ID = ?";
+        String sql = "DELETE FROM CONSUMPTION WHERE CONSUMPTIONID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

@@ -10,7 +10,7 @@ public class RateCRUD
     // CREATE
     public boolean addRecord(Rate rate)
     {
-        String sql = "INSERT INTO RATE (UTILITY_TYPE_ID, RATE_PER_UNIT, EFFECTIVE_DATE) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO RATE (UTILITYTYPEID, RATEPERUNIT, EFFECTIVEDATE) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, rate.utilityTypeID());
@@ -51,7 +51,7 @@ public class RateCRUD
     // READ ONE
     public Rate getRecordById(int rateId)
     {
-        String sql = "SELECT * FROM RATE WHERE RATE_ID = ?";
+        String sql = "SELECT * FROM RATE WHERE RATEID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -74,7 +74,7 @@ public class RateCRUD
 
     // UPDATE
     public boolean updateRecord(Rate rate) {
-        String sql = "UPDATE RATE SET UTILITY_TYPE_ID = ?, RATE_PER_UNIT = ?, EFFECTIVE_DATE = ? WHERE RATE_ID = ?";
+        String sql = "UPDATE RATE SET UTILITYTYPEID = ?, RATEPERUNIT = ?, EFFECTIVEDATE = ? WHERE RATEID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, rate.utilityTypeID());
@@ -91,7 +91,7 @@ public class RateCRUD
 
     // DELETE
     public boolean deleteRecord(int rateId) {
-        String sql = "DELETE FROM RATE WHERE RATE_ID = ?";
+        String sql = "DELETE FROM RATE WHERE RATEID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

@@ -6,7 +6,10 @@ public record Employee(
         int employeeID, // PK
         String firstName,
         String lastName,
-        String address,
+        String street,
+        String city,
+        String province,
+        String zipCode,
         String contactNumber,
         Integer departmentID, // FK to Department
         String position,

@@ -5,10 +5,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentReceiptCRUD {
+public class PaymentCRUD {
 
     // CREATE
-    public boolean addRecord(PaymentReceipt receipt) {
+    public boolean addRecord(Payment receipt) {
         String sql = "INSERT INTO PAYMENT_RECEIPT (BILL_ID, PAYMENT_DATE, AMOUNT_PAID, PAYMENT_METHOD, RECEIPT_NUMBER, PROCESSED_BY_USER_ID, COLLECTOR_ID, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -30,15 +30,15 @@ public class PaymentReceiptCRUD {
     }
 
     // READ ALL
-    public List<PaymentReceipt> getAllRecords() {
-        List<PaymentReceipt> list = new ArrayList<>();
+    public List<Payment> getAllRecords() {
+        List<Payment> list = new ArrayList<>();
         String sql = "SELECT * FROM PAYMENT_RECEIPT";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                PaymentReceipt pr = new PaymentReceipt(
+                Payment pr = new Payment(
                         rs.getInt("PAYMENT_ID"),
                         rs.getInt("BILL_ID"),
                         rs.getDate("PAYMENT_DATE"),
@@ -58,7 +58,7 @@ public class PaymentReceiptCRUD {
     }
 
     // READ ONE
-    public PaymentReceipt getRecordById(int receiptId) {
+    public Payment getRecordById(int receiptId) {
         String sql = "SELECT * FROM PAYMENT_RECEIPT WHERE PAYMENT_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -66,7 +66,7 @@ public class PaymentReceiptCRUD {
             ps.setLong(1, receiptId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new PaymentReceipt(
+                    return new Payment(
                             rs.getInt("PAYMENT_ID"),
                             rs.getInt("BILL_ID"),
                             rs.getDate("PAYMENT_DATE"),
@@ -89,7 +89,7 @@ public class PaymentReceiptCRUD {
     // I will include them here for full CRUD completeness, but they should be used with caution.
 
     // UPDATE
-    public boolean updateRecord(PaymentReceipt receipt) {
+    public boolean updateRecord(Payment receipt) {
         String sql = "UPDATE PAYMENT_RECEIPT SET BILL_ID = ?, PAYMENT_DATE = ?, AMOUNT_PAID = ?, PAYMENT_METHOD = ?, RECEIPT_NUMBER = ?, PROCESSED_BY_USER_ID=?, COLLECTOR_ID=?, STATUS=? WHERE PAYMENT_ID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

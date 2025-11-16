@@ -9,11 +9,12 @@ public class DepartmentCRUD
 {
     // CREATE
     public boolean addRecord(Department department) {
-        String sql = "INSERT INTO DEPARTMENT (DEPARTMENT_NAME) VALUES (?)";
+        String sql = "INSERT INTO DEPARTMENT (DEPARTMENTNAME, Description) VALUES (?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
             ps.setString(1, department.departmentName());
+            ps.setString(2, department.description());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -33,7 +34,8 @@ public class DepartmentCRUD
             while (rs.next()) {
                 Department d = new Department(
                         rs.getInt("DEPARTMENT_ID"),
-                        rs.getString("DEPARTMENT_NAME")
+                        rs.getString("DEPARTMENT_NAME"),
+                        rs.getString("DESCRIPTION")
                 );
                 list.add(d);
             }
@@ -45,7 +47,7 @@ public class DepartmentCRUD
 
     // READ ONE
     public Department getRecordById(int departmentId) {
-        String sql = "SELECT * FROM DEPARTMENT WHERE DEPARTMENT_ID = ?";
+        String sql = "SELECT * FROM DEPARTMENT WHERE DEPARTMENTID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
@@ -54,7 +56,8 @@ public class DepartmentCRUD
                 if (rs.next()) {
                     return new Department(
                             rs.getInt("DEPARTMENT_ID"),
-                            rs.getString("DEPARTMENT_NAME")
+                            rs.getString("DEPARTMENT_NAME"),
+                            rs.getString("DESCRIPTION")
                     );
                 }
             }
@@ -66,12 +69,13 @@ public class DepartmentCRUD
 
     // UPDATE
     public boolean updateRecord(Department department) {
-        String sql = "UPDATE DEPARTMENT SET DEPARTMENT_NAME=? WHERE DEPARTMENT_ID=?";
+        String sql = "UPDATE DEPARTMENT SET DEPARTMENTNAME=?, Description=? WHERE DEPARTMENTID=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql))
         {
             ps.setString(1, department.departmentName());
             ps.setLong(2, department.departmentID());
+            ps.setString(2, department.description());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -82,7 +86,7 @@ public class DepartmentCRUD
 
     // DELETE
     public boolean deleteRecord(int departmentId) {
-        String sql = "DELETE FROM DEPARTMENT WHERE DEPARTMENT_ID=?";
+        String sql = "DELETE FROM DEPARTMENT WHERE DEPARTMENTID=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, departmentId);

@@ -9,7 +9,7 @@ public class CustomerCRUD
 {
     // CREATE
     public boolean addRecord(Customer customer) {
-        String sql = "INSERT INTO Customer (account_number, first_name, last_name, street, city, province, zip_code, contact_number, created_date, billing_status) VALUES (?, ?, ?, ?, ?, ?, ? , ?, ?, ?)";
+        String sql = "INSERT INTO Customer (accountnumber, firstname, lastname, street, city, province, zipcode, contactnumber, createddate, billingstatus) VALUES (?, ?, ?, ?, ?, ?, ? , ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt  = conn.prepareStatement(sql))
         {
@@ -63,7 +63,7 @@ public class CustomerCRUD
 
     // READ ONE
     public Customer getRecordById(int id) {
-        String sql = "SELECT * FROM Customer WHERE customer_id = ?";
+        String sql = "SELECT * FROM Customer WHERE customerid = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -91,7 +91,7 @@ public class CustomerCRUD
 
     // UPDATE
     public boolean updateRecord(Customer customer) {
-        String sql = "UPDATE Customer SET account_number=?, first_name=?, last_name=?, street=?, city=?, province=?, zip_code=?, contact_number=?, created_date=?, billing_status=? WHERE customer_id = ?";
+        String sql = "UPDATE Customer SET accountnumber=?, firstname=?, lastname=?, street=?, city=?, province=?, zipcode=?, contactnumber=?, createddate=?, billingstatus=? WHERE customerid = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, customer.accountNumber());
@@ -115,7 +115,7 @@ public class CustomerCRUD
 
     // DELETE
     public boolean deleteRecord(int id) {
-        String sql = "DELETE FROM Customer WHERE customer_id=?";
+        String sql = "DELETE FROM Customer WHERE customerid=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);

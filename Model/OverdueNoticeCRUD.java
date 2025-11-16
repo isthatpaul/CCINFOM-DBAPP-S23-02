@@ -9,7 +9,7 @@ public class OverdueNoticeCRUD
 {
     // CREATE
     public boolean addRecord(OverdueNotice notice) {
-        String sql = "INSERT INTO OVERDUE_NOTICE (BILL_ID, OVERDUE_DATE, PENALTY_AMOUNT, NOTICE_DATE, ESCALATION_STATUS, SENT_BY_USER_ID) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO OVERDUENOTICE (BILLID, OVERDUEDATE, PENALTYAMOUNT, NOTICEDATE, ESCALATIONSTATUS, SENTBYSTAFFID) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -18,7 +18,7 @@ public class OverdueNoticeCRUD
             ps.setDouble(3, notice.penaltyAmount());
             ps.setDate(4, notice.noticeDate());
             ps.setString(5, notice.escalationStatus());
-            ps.setInt(6, notice.sentByUserID());
+            ps.setInt(6, notice.sentByStaffID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -30,7 +30,7 @@ public class OverdueNoticeCRUD
     // READ ALL
     public List<OverdueNotice> getAllRecords() {
         List<OverdueNotice> list = new ArrayList<>();
-        String sql = "SELECT * FROM OVERDUE_NOTICE";
+        String sql = "SELECT * FROM OVERDUENOTICE";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -43,7 +43,7 @@ public class OverdueNoticeCRUD
                         rs.getDouble("PENALTY_AMOUNT"),
                         rs.getDate("notice_date"),
                         rs.getString("escalation_status"),
-                        rs.getInt("sent_by_user_id")
+                        rs.getInt("sent_by_staff_id")
                 );
                 list.add(on);
             }
@@ -55,7 +55,7 @@ public class OverdueNoticeCRUD
 
     // READ ONE
     public OverdueNotice getRecordById(int noticeId) {
-        String sql = "SELECT * FROM OVERDUE_NOTICE WHERE NOTICE_ID = ?";
+        String sql = "SELECT * FROM OVERDUENOTICE WHERE NOTICEID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -69,7 +69,7 @@ public class OverdueNoticeCRUD
                             rs.getDouble("PENALTY_AMOUNT"),
                             rs.getDate("notice_date"),
                             rs.getString("escalation_status"),
-                            rs.getInt("sent_by_user_id")
+                            rs.getInt("sent_by_staff_id")
                     );
                 }
             }
@@ -81,7 +81,7 @@ public class OverdueNoticeCRUD
 
     // UPDATE is typically not done for notices, but included for completeness.
     public boolean updateRecord(OverdueNotice notice) {
-        String sql = "UPDATE OVERDUE_NOTICE SET BILL_ID = ?, OVERDUE_DATE = ?, PENALTY_AMOUNT = ?, escalation_status = ?, sent_by_user_id = ? WHERE NOTICE_ID = ?";
+        String sql = "UPDATE OVERDUENOTICE SET BILLID = ?, OVERDUEDATE = ?, PENALTYAMOUNT = ?, escalationstatus = ?, sentbystaffid = ? WHERE NOTICEID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, notice.billID());
@@ -89,7 +89,7 @@ public class OverdueNoticeCRUD
             ps.setDouble(3, notice.penaltyAmount());
             ps.setDate(4, notice.noticeDate());
             ps.setString(5, notice.escalationStatus());
-            ps.setInt(6, notice.sentByUserID());
+            ps.setInt(6, notice.sentByStaffID());
             ps.setInt(7, notice.noticeID());
             ps.executeUpdate();
             return true;
@@ -101,7 +101,7 @@ public class OverdueNoticeCRUD
 
     // DELETE
     public boolean deleteRecord(int noticeId) {
-        String sql = "DELETE FROM OVERDUE_NOTICE WHERE NOTICE_ID = ?";
+        String sql = "DELETE FROM OVERDUENOTICE WHERE NOTICEID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

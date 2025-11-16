@@ -5,11 +5,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeterAssignmentCRUD
-{
+public class MeterAssignmentCRUD {
+
     // CREATE
     public boolean addRecord(MeterAssignment assign) {
-        String sql = "INSERT INTO METER_ASSIGNMENT (CUSTOMER_ID, METER_ID, ASSIGNMENT_DATE, INSTALLATION_DATE, ASSIGNED_BY_USER_ID, STATUS, LAST_UPDATED) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO METERASSIGNMENT " +
+                "(CUSTOMERID, METERID, ASSIGNMENTDATE, INSTALLATIONDATE, " +
+                "ASSIGNEDBYSTAFFID, STATUS, LASTUPDATED) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -17,11 +19,12 @@ public class MeterAssignmentCRUD
             ps.setInt(2, assign.meterID());
             ps.setDate(3, assign.assignmentDate());
             ps.setDate(4, assign.installationDate());
-            ps.setInt(5, assign.assignedByUserID());
+            ps.setInt(5, assign.assignedByStaffID());
             ps.setString(6, assign.status());
             ps.setDate(7, assign.lastUpdated());
             ps.executeUpdate();
             return true;
+
         } catch (SQLException e) {
             System.err.println("MeterAssignment addRecord error: " + e.getMessage());
             return false;
@@ -31,7 +34,7 @@ public class MeterAssignmentCRUD
     // READ ALL
     public List<MeterAssignment> getAllRecords() {
         List<MeterAssignment> list = new ArrayList<>();
-        String sql = "SELECT * FROM METER_ASSIGNMENT";
+        String sql = "SELECT * FROM METERASSIGNMENT";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -42,26 +45,28 @@ public class MeterAssignmentCRUD
                         rs.getInt("CUSTOMER_ID"),
                         rs.getInt("METER_ID"),
                         rs.getDate("ASSIGNMENT_DATE"),
-                        rs.getDate("Installation_date"),
+                        rs.getDate("INSTALLATION_DATE"),
                         rs.getInt("ASSIGNED_BY_USER_ID"),
                         rs.getString("STATUS"),
-                        rs.getDate("last_updated")
+                        rs.getDate("LAST_UPDATED")
                 );
                 list.add(ma);
             }
+
         } catch (SQLException e) {
             System.err.println("MeterAssignment getAllRecords error: " + e.getMessage());
         }
         return list;
     }
 
-    // READ ONE (by primary key ASSIGNMENT_ID, assuming it exists)
+    // READ ONE (by primary key ASSIGNMENT_ID)
     public MeterAssignment getRecordById(int assignmentID) {
-        String sql = "SELECT * FROM METER_ASSIGNMENT WHERE ASSIGNMENT_ID = ?";
+        String sql = "SELECT * FROM METERASSIGNMENT WHERE ASSIGNMENTID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, assignmentID);
+            ps.setInt(1, assignmentID);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new MeterAssignment(
@@ -69,13 +74,14 @@ public class MeterAssignmentCRUD
                             rs.getInt("CUSTOMER_ID"),
                             rs.getInt("METER_ID"),
                             rs.getDate("ASSIGNMENT_DATE"),
-                            rs.getDate("Installation_date"),
+                            rs.getDate("INSTALLATION_DATE"),
                             rs.getInt("ASSIGNED_BY_USER_ID"),
                             rs.getString("STATUS"),
-                            rs.getDate("last_updated")
+                            rs.getDate("LAST_UPDATED")
                     );
                 }
             }
+
         } catch (SQLException e) {
             System.err.println("MeterAssignment getRecordById error: " + e.getMessage());
         }
@@ -84,19 +90,25 @@ public class MeterAssignmentCRUD
 
     // UPDATE
     public boolean updateRecord(MeterAssignment assign) {
-        String sql = "UPDATE METER_ASSIGNMENT SET CUSTOMER_ID = ?, METER_ID = ?, ASSIGNMENT_DATE = ?, INSTALLATION_DATE=?, ASSIGNED_BY_USER_ID=?, STATUS = ?, LAST_UPDATED=? WHERE ASSIGNMENT_ID = ?";
+        String sql = "UPDATE METERASSIGNMENT SET " +
+                "CUSTOMERID = ?, METERID = ?, ASSIGNMENTDATE = ?, INSTALLATIONDATE = ?, " +
+                "ASSIGNEDBYStaffID = ?, STATUS = ?, LASTUPDATED = ? " +
+                "WHERE ASSIGNMENTID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, assign.customerID());
             ps.setInt(2, assign.meterID());
             ps.setDate(3, assign.assignmentDate());
             ps.setDate(4, assign.installationDate());
-            ps.setInt(5, assign.assignedByUserID());
+            ps.setInt(5, assign.assignedByStaffID());
             ps.setString(6, assign.status());
             ps.setDate(7, assign.lastUpdated());
             ps.setInt(8, assign.assignmentID());
+
             ps.executeUpdate();
             return true;
+
         } catch (SQLException e) {
             System.err.println("MeterAssignment updateRecord error: " + e.getMessage());
             return false;
@@ -105,13 +117,14 @@ public class MeterAssignmentCRUD
 
     // DELETE
     public boolean deleteRecord(int assignmentID) {
-        String sql = "DELETE FROM METER_ASSIGNMENT WHERE ASSIGNMENT_ID = ?";
+        String sql = "DELETE FROM METERASSIGNMENT WHERE ASSIGNMENTID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setLong(1, assignmentID);
+            ps.setInt(1, assignmentID);
             ps.executeUpdate();
             return true;
+
         } catch (SQLException e) {
             System.err.println("MeterAssignment deleteRecord error: " + e.getMessage());
             return false;

@@ -1,7 +1,7 @@
 package Model;
 
-public record UserAccount(
-        int userID, // PK
+public record Staff(
+        int staffID, // PK
         int employeeID, // FK to Employee (and UNIQUE)
         String username, // UNIQUE
         String passwordHash, // Store as Hash

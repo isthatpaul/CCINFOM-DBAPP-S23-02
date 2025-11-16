@@ -9,7 +9,7 @@ public class MeterCRUD
 {
     // CREATE
     public boolean addRecord(Meter meter) {
-        String sql = "INSERT INTO METER (UTILITY_TYPE_ID, METER_SERIAL_NUMBER, METER_STATUS) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO METER (UTILITYTYPEID, METERSERIALNUMBER, METERSTATUS) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -48,8 +48,8 @@ public class MeterCRUD
     }
 
     // READ ONE
-    public Meter getRecordById(Long meterId) {
-        String sql = "SELECT * FROM METER WHERE METER_ID = ?";
+    public Meter getRecordById(int meterId) {
+        String sql = "SELECT * FROM METER WHERE METERID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, meterId);
@@ -71,7 +71,7 @@ public class MeterCRUD
 
     // UPDATE
     public boolean updateRecord(Meter meter) {
-        String sql = "UPDATE METER SET UTILITY_TYPE_ID = ?, METER_SERIAL_NUMBER = ?, METER_STATUS = ? WHERE METER_ID = ?";
+        String sql = "UPDATE METER SET UTILITYTYPEID = ?, METERSERIALNUMBER = ?, METERSTATUS = ? WHERE METERID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, meter.utilityTypeID());
@@ -87,8 +87,8 @@ public class MeterCRUD
     }
 
     // DELETE
-    public boolean deleteRecord(Long meterId) {
-        String sql = "DELETE FROM METER WHERE METER_ID = ?";
+    public boolean deleteRecord(int meterId) {
+        String sql = "DELETE FROM METER WHERE METERID = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, meterId);
