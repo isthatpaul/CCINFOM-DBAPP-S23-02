@@ -94,7 +94,7 @@ public class PublicUtilityBillingSystem {
     private static void handleStartupError(Exception e) {
         System.err.println();
         System.err.println("==========================================================");
-        System.err.println("✗ FATAL ERROR: Failed to start application");
+        System.err.println(" FATAL ERROR: Failed to start application");
         System.err.println("==========================================================");
         System.err.println("Error: " + e.getMessage());
         e.printStackTrace();
