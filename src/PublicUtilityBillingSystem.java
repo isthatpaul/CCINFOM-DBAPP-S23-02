@@ -3,6 +3,8 @@ import Database.DatabaseConnection;
 import config.AppConfig;
 
 import javax.swing.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Public Utility Billing System - Main Driver Class
@@ -13,6 +15,9 @@ import javax.swing.*;
  * @since 2025-11-17
  */
 public class PublicUtilityBillingSystem {
+
+    private static final DateTimeFormatter DATE_FORMATTER = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static void main(String[] args) {
         printStartupBanner();
@@ -38,8 +43,8 @@ public class PublicUtilityBillingSystem {
         System.out.println("Database     : " + AppConfig.DB_URL.split("/")[3]);
         System.out.println("Java Version : " + System.getProperty("java.version"));
         System.out.println("OS           : " + System.getProperty("os.name"));
-        System.out.println("Start Time   : 2025-11-17 14:06:37 UTC");
-        System.out.println("User         : isthatpaul");
+        System.out.println("Start Time   : " + LocalDateTime.now().format(DATE_FORMATTER) + " UTC");
+        System.out.println("User         : " + System.getProperty("user.name"));
         System.out.println("==========================================================");
         System.out.println();
         System.out.println("Initializing application...");
@@ -52,7 +57,7 @@ public class PublicUtilityBillingSystem {
             System.setProperty("swing.aatext", "true");
             System.out.println("✓ System Look and Feel applied successfully");
         } catch (Exception e) {
-            System.err.println("Could not set Look and Feel: " + e.getMessage());
+            System.err.println("⚠ Could not set Look and Feel: " + e.getMessage());
         }
     }
 
@@ -61,9 +66,9 @@ public class PublicUtilityBillingSystem {
         boolean connected = DatabaseConnection.testConnection();
 
         if (connected) {
-            System.out.println("Database connection successful");
+            System.out.println("✓ Database connection successful");
         } else {
-            System.err.println("Database connection failed!");
+            System.err.println("✗ Database connection failed!");
             System.err.println("  Please check:");
             System.err.println("  - MySQL server is running");
             System.err.println("  - Database: public_utility_billing_system exists");
@@ -112,7 +117,7 @@ public class PublicUtilityBillingSystem {
             System.out.println();
             System.out.println("==========================================================");
             System.out.println("Application shutting down...");
-            System.out.println("End Time   : " + java.time.LocalDateTime.now());
+            System.out.println("End Time   : " + LocalDateTime.now().format(DATE_FORMATTER) + " UTC");
             System.out.println("==========================================================");
         }));
     }

@@ -3,6 +3,7 @@ package Views;
 import Views.components.*;
 import Views.customer.CustomerPanel;
 import Views.billing.BillPanel;
+import Views.billing.ConsumptionPanel;
 import Views.billing.PaymentPanel;
 import Views.meter.MeterPanel;
 import Views.meter.MeterAssignmentPanel;
@@ -39,6 +40,7 @@ public class MainFrame extends JFrame {
     private UtilityTypePanel utilityTypePanel;
     private RatePanel ratePanel;
     private ReportsPanel reportsPanel;
+    private ConsumptionPanel consumptionPanel;
 
     public MainFrame(Staff staff) {
         this.currentStaff = staff;
@@ -236,6 +238,7 @@ public class MainFrame extends JFrame {
         utilityTypePanel = new UtilityTypePanel();
         ratePanel = new RatePanel();
         reportsPanel = new ReportsPanel();
+        consumptionPanel = new ConsumptionPanel();
 
         contentPanel.add(dashboard, "DASHBOARD");
         contentPanel.add(customerPanel, "CUSTOMERS");
@@ -247,6 +250,7 @@ public class MainFrame extends JFrame {
         contentPanel.add(utilityTypePanel, "UTILITY_TYPES");
         contentPanel.add(ratePanel, "RATES");
         contentPanel.add(reportsPanel, "REPORTS");
+        contentPanel.add(consumptionPanel, "CONSUMPTION");
     }
 
     private void showDashboard() {
@@ -292,6 +296,11 @@ public class MainFrame extends JFrame {
     private void showRates() {
         ratePanel.refreshData();
         cardLayout.show(contentPanel, "RATES");
+    }
+
+    private void showConsumption() {
+        consumptionPanel.refreshData();
+        cardLayout.show(contentPanel, "CONSUMPTION");
     }
 
     private void showReports() {
