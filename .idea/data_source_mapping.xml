@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/28324587-8554-4adc-9627-cb4df3acf1b7/console.sql" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/28324587-8554-4adc-9627-cb4df3acf1b7/console_1.sql" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/BillCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/ConsumptionCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/CustomerCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/DAO/BillingReportDAO.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/DAO/ConsumptionReportDAO.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/DAO/CustomerReportDAO.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/DAO/OverdueReportDAO.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/DAO/RevenueReportDAO.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/DepartmentCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/EmployeeCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/MeterAssignmentCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/MeterCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/OverdueNoticeCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/PaymentCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/RateCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/StaffCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+    <file url="file://$PROJECT_DIR$/src/Model/UtilityTypeCRUD.java" value="28324587-8554-4adc-9627-cb4df3acf1b7" />
+  </component>
+</project>
