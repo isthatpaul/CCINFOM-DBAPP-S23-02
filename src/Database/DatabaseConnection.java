@@ -25,9 +25,9 @@ public class DatabaseConnection {
         // Load driver explicitly
         try {
             Class.forName(AppConfig.DB_DRIVER);
-            System.out.println("✓ MySQL JDBC Driver loaded successfully");
+            System.out.println("MySQL JDBC Driver loaded successfully");
         } catch (ClassNotFoundException e) {
-            System.err.println("⚠ MySQL JDBC Driver not found: " + e.getMessage());
+            System.err.println("MySQL JDBC Driver not found: " + e.getMessage());
             System.err.println("  Make sure mysql-connector-java is in classpath");
         }
     }

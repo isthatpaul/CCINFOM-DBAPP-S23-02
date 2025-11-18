@@ -260,7 +260,7 @@ public class LoginFrame extends JFrame {
         separatorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         separatorLabel.setForeground(new Color(156, 163, 175));
 
-        JLabel versionLabel = new JLabel("Version 1.0");
+        JLabel versionLabel = new JLabel("Version 3.0");
         versionLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         versionLabel.setForeground(new Color(156, 163, 175));
 

@@ -15,7 +15,6 @@ public class BillService {
     private final OverdueNoticeCRUD overdueNoticeCRUD = new OverdueNoticeCRUD();
 
     public boolean generateBill(Consumption consumption, Rate rate, int customerID, int staffID, Integer technicianID, int dueDays) {
-        // duplicate check (unchanged) ...
 
         double amountDue = consumption.consumptionValue() * rate.ratePerUnit();
 

@@ -7,7 +7,7 @@ USE `public_utility_billing_system`;
 -- UtilityType
 -- ================================
 CREATE TABLE UtilityType (
-    UtilityTypeID INT PRIMARY KEY AUTO_INCREMENT,
+    UtilityTypeID INT PRIMARY KEY,
     UtilityTypeName VARCHAR(100) NOT NULL,
     Description VARCHAR(255),
     UnitOfMeasure VARCHAR(50) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE UtilityType (
 -- Rate
 -- ================================
 CREATE TABLE Rate (
-    RateID INT PRIMARY KEY AUTO_INCREMENT,
+    RateID INT PRIMARY KEY,
     UtilityTypeID INT NOT NULL,
     RatePerUnit DECIMAL(10,2) NOT NULL,
     EffectiveDate DATE NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE Rate (
 -- Department
 -- ================================
 CREATE TABLE Department (
-    DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
+    DepartmentID INT PRIMARY KEY,
     DepartmentName VARCHAR(100) NOT NULL,
     Description VARCHAR(255)
 );
@@ -40,7 +40,7 @@ CREATE TABLE Department (
 -- Employee
 -- ================================
 CREATE TABLE Employee (
-    EmployeeID INT PRIMARY KEY AUTO_INCREMENT,
+    EmployeeID INT PRIMARY KEY,
     DepartmentID INT NOT NULL,
     FirstName VARCHAR(100) NOT NULL,
     LastName VARCHAR(100) NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE Employee (
 -- Staff (User Accounts)
 -- ================================
 CREATE TABLE Staff (
-    StaffID INT PRIMARY KEY AUTO_INCREMENT,
+    StaffID INT PRIMARY KEY,
     EmployeeID INT NOT NULL UNIQUE,
     Username VARCHAR(50) NOT NULL UNIQUE,
     Password VARCHAR(255) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE Staff (
 -- Customer
 -- ================================
 CREATE TABLE Customer (
-    CustomerID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT PRIMARY KEY,
     AccountNumber VARCHAR(50) NOT NULL UNIQUE,
     FirstName VARCHAR(100) NOT NULL,
     LastName VARCHAR(100) NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE Customer (
 -- MeterAssignment
 -- ================================
 CREATE TABLE MeterAssignment (
-    AssignmentID INT PRIMARY KEY AUTO_INCREMENT,
+    AssignmentID INT PRIMARY KEY,
     CustomerID INT NOT NULL,
     MeterID INT NOT NULL,
     AssignmentDate DATE NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE MeterAssignment (
 -- Consumption
 -- ================================
 CREATE TABLE Consumption (
-    ConsumptionID INT PRIMARY KEY AUTO_INCREMENT,
+    ConsumptionID INT PRIMARY KEY,
     ReadingDate DATE NOT NULL,
     ConsumptionValue DECIMAL(10,2) NOT NULL,
     MeterID INT NOT NULL
@@ -115,7 +115,7 @@ CREATE TABLE Consumption (
 -- Bill
 -- ================================
 CREATE TABLE Bill (
-    BillID INT PRIMARY KEY AUTO_INCREMENT,
+    BillID INT PRIMARY KEY,
     CustomerID INT NOT NULL,
     ConsumptionID INT NOT NULL,
     RateID INT NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE Bill (
 -- Payment
 -- ================================
 CREATE TABLE Payment (
-    PaymentID INT PRIMARY KEY AUTO_INCREMENT,
+    PaymentID INT PRIMARY KEY,
     BillID INT NOT NULL,
     PaymentDate DATE NOT NULL,
     AmountPaid DECIMAL(10,2) NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE Payment (
 -- OverdueNotice
 -- ================================
 CREATE TABLE OverdueNotice (
-    NoticeID INT PRIMARY KEY AUTO_INCREMENT,
+    NoticeID INT PRIMARY KEY,
     BillID INT NOT NULL,
     OverdueDate DATE NOT NULL,
     PenaltyAmount DECIMAL(10,2) NOT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE OverdueNotice (
 -- Meter
 -- ================================
 CREATE TABLE Meter (
-	MeterID INT PRIMARY KEY AUTO_INCREMENT,
+	MeterID INT PRIMARY KEY,
 	UtilityTypeID INT,
 	MeterSerialNumber VARCHAR(100) NOT NULL UNIQUE,
 	MeterStatus VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
