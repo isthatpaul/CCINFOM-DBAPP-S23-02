@@ -3,6 +3,7 @@ package Views;
 import Views.components.*;
 import Model.Staff;
 import Model.StaffCRUD;
+import Services.PasswordUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -147,6 +148,21 @@ public class LoginFrame extends JFrame {
         gbc.insets = new Insets(10, 0, 0, 0);
         panel.add(loginButton, gbc);
 
+        // Forgot password link
+        JLabel forgotPasswordLabel = new JLabel("<html><u>Forgot password?</u></html>");
+        forgotPasswordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        forgotPasswordLabel.setForeground(ColorScheme.PRIMARY);
+        forgotPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        forgotPasswordLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openForgotPasswordDialog();
+            }
+        });
+        gbc.gridy = 7;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        panel.add(forgotPasswordLabel, gbc);
+
         // Enter key listener
         passwordField.addKeyListener(new KeyAdapter() {
             @Override
@@ -180,7 +196,11 @@ public class LoginFrame extends JFrame {
             protected void done() {
                 try {
                     Staff staff = get();
-                    if (staff != null && staff.passwordHash().equals(password)) {
+                    if (staff != null && PasswordUtils.verifyPassword(password, staff.passwordHash())) {
+                        if (PasswordUtils.needsRehash(staff.passwordHash())) {
+                            String newHash = PasswordUtils.hashPassword(password);
+                            staffCRUD.updatePasswordHash(staff.staffID(), newHash);
+                        }
                         // Successful login
                         dispose();
                         SwingUtilities.invokeLater(() -> {
@@ -202,6 +222,11 @@ public class LoginFrame extends JFrame {
 
     private void showError(String message) {
         errorLabel.setText(message);
+    }
+
+    private void openForgotPasswordDialog() {
+        ForgotPasswordDialog dialog = new ForgotPasswordDialog(this);
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {
