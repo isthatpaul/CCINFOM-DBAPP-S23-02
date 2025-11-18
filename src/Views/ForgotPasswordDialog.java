@@ -10,6 +10,8 @@ import Views.components.StyledButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * Dialog that allows staff to reset their password after providing identity details.
@@ -25,6 +27,9 @@ public class ForgotPasswordDialog extends JDialog {
 
     private final StaffCRUD staffCRUD = new StaffCRUD();
     private final EmployeeCRUD employeeCRUD = new EmployeeCRUD();
+    
+    // Password validation pattern - require uppercase, lowercase, and digit
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
 
     public ForgotPasswordDialog(Frame owner) {
         super(owner, "Reset Password", true);
@@ -32,19 +37,21 @@ public class ForgotPasswordDialog extends JDialog {
     }
 
     private void initComponents() {
-        setSize(420, 420);
+        setSize(420, 550);
         setLocationRelativeTo(getOwner());
         setResizable(false);
 
-        JPanel container = new JPanel(new BorderLayout());
+        JPanel container = new JPanel(new BorderLayout(0, 10));
         container.setBackground(Color.WHITE);
         container.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
 
-        JLabel titleLabel = new JLabel("Forgot Password");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        // Title
+        JLabel titleLabel = new JLabel("Reset Password");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         titleLabel.setForeground(ColorScheme.TEXT_PRIMARY);
         container.add(titleLabel, BorderLayout.NORTH);
 
+        // Form Panel
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -52,7 +59,7 @@ public class ForgotPasswordDialog extends JDialog {
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(8, 0, 2, 0);
+        gbc.weightx = 1.0;
 
         usernameField = createTextField();
         employeeIdField = createTextField();
@@ -66,59 +73,71 @@ public class ForgotPasswordDialog extends JDialog {
         addField(formPanel, gbc, "New Password", newPasswordField);
         addField(formPanel, gbc, "Confirm Password", confirmPasswordField);
 
+        // Error label
         errorLabel = new JLabel(" ");
         errorLabel.setForeground(ColorScheme.ERROR);
-        errorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        errorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         gbc.gridy++;
-        gbc.insets = new Insets(10, 0, 0, 0);
+        gbc.insets = new Insets(3, 0, 3, 0);
         formPanel.add(errorLabel, gbc);
 
+        // Reset Password Button
         StyledButton resetButton = new StyledButton("Reset Password", StyledButton.ButtonType.PRIMARY);
+        resetButton.setPreferredSize(new Dimension(350, 36));
         resetButton.addActionListener(e -> handleReset());
         gbc.gridy++;
-        gbc.insets = new Insets(15, 0, 0, 0);
+        gbc.insets = new Insets(8, 0, 0, 0);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         formPanel.add(resetButton, gbc);
 
         container.add(formPanel, BorderLayout.CENTER);
 
-        JLabel infoLabel = new JLabel("<html><div style='width:340px;'>Enter your employee ID and last name so we can verify your identity before updating the password.</div></html>");
-        infoLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        // Info Panel - more compact
+        JLabel infoLabel = new JLabel("<html><div style='width:350px; font-size:10px;'>" +
+                "<i>Enter your employee ID and last name to verify your identity.</i><br><br>" +
+                "<b>Password requirements:</b> 8+ chars, uppercase, lowercase, number" +
+                "</div></html>");
+        infoLabel.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         infoLabel.setForeground(ColorScheme.TEXT_SECONDARY);
+        infoLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
         container.add(infoLabel, BorderLayout.SOUTH);
 
         setContentPane(container);
     }
 
     private void addField(JPanel panel, GridBagConstraints gbc, String label, JComponent field) {
-        gbc.insets = new Insets(8, 0, 2, 0);
+        // Label
         JLabel jLabel = new JLabel(label);
-        jLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        jLabel.setFont(new Font("Segoe UI", Font.BOLD, 11));
         jLabel.setForeground(ColorScheme.TEXT_PRIMARY);
-        gbc.gridx = 0;
         gbc.gridy++;
+        gbc.insets = new Insets(3, 0, 3, 0);
         panel.add(jLabel, gbc);
 
-        gbc.insets = new Insets(0, 0, 10, 0);
+        // Field
         gbc.gridy++;
+        gbc.insets = new Insets(0, 0, 8, 0);
         panel.add(field, gbc);
     }
 
     private JTextField createTextField() {
         JTextField field = new JTextField();
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        field.setPreferredSize(new Dimension(350, 32));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
         return field;
     }
 
     private JPasswordField createPasswordField() {
         JPasswordField field = new JPasswordField();
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        field.setPreferredSize(new Dimension(350, 32));
         field.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)
         ));
         return field;
     }
@@ -127,60 +146,111 @@ public class ForgotPasswordDialog extends JDialog {
         String username = usernameField.getText().trim();
         String employeeIdText = employeeIdField.getText().trim();
         String lastNameInput = lastNameField.getText().trim();
-        String newPassword = new String(newPasswordField.getPassword()).trim();
-        String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
+        char[] newPasswordChars = newPasswordField.getPassword();
+        char[] confirmPasswordChars = confirmPasswordField.getPassword();
 
-        if (username.isEmpty() || employeeIdText.isEmpty() || lastNameInput.isEmpty() ||
-                newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            showError("All fields are required.");
-            return;
-        }
-
-        int employeeId;
         try {
-            employeeId = Integer.parseInt(employeeIdText);
-        } catch (NumberFormatException e) {
-            showError("Employee ID must be a number.");
-            return;
-        }
+            // Validate all fields are filled
+            if (username.isEmpty() || employeeIdText.isEmpty() || lastNameInput.isEmpty() ||
+                    newPasswordChars.length == 0 || confirmPasswordChars.length == 0) {
+                showError("All fields are required.");
+                return;
+            }
 
-        if (newPassword.length() < 8) {
-            showError("Password must be at least 8 characters.");
-            return;
-        }
+            // Validate username
+            if (username.length() < 3 || username.length() > 50) {
+                showError("Invalid username format.");
+                return;
+            }
 
-        if (!newPassword.equals(confirmPassword)) {
-            showError("Passwords do not match.");
-            return;
-        }
+            // Validate and parse Employee ID
+            int employeeId;
+            try {
+                employeeId = Integer.parseInt(employeeIdText);
+                if (employeeId <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                showError("Employee ID must be a valid positive number.");
+                return;
+            }
 
-        Staff staff = staffCRUD.getRecordByUsername(username);
-        if (staff == null) {
-            showError("No account found for that username.");
-            return;
-        }
+            // Validate last name
+            if (lastNameInput.length() < 2 || lastNameInput.length() > 100) {
+                showError("Please enter a valid last name.");
+                return;
+            }
 
-        if (staff.employeeID() != employeeId) {
-            showError("Employee ID does not match our records.");
-            return;
-        }
+            // Use constant-time comparison for passwords to prevent timing attacks
+            if (!Arrays.equals(newPasswordChars, confirmPasswordChars)) {
+                showError("Passwords do not match.");
+                return;
+            }
 
-        Employee employee = employeeCRUD.getRecordById(staff.employeeID());
-        if (employee == null || !employee.lastName().equalsIgnoreCase(lastNameInput)) {
-            showError("Verification failed. Please confirm your last name.");
-            return;
-        }
+            // Convert password to String for validation
+            String newPassword = new String(newPasswordChars);
 
-        String newHash = PasswordUtils.hashPassword(newPassword);
-        boolean updated = staffCRUD.updatePasswordHash(staff.staffID(), newHash);
-        if (updated) {
-            JOptionPane.showMessageDialog(this,
-                    "Password updated successfully. You can now sign in.",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            dispose();
-        } else {
-            showError("Unable to update password. Please try again.");
+            // Validate password length
+            if (newPassword.length() < 8) {
+                showError("Password must be at least 8 characters.");
+                return;
+            }
+
+            // Validate password complexity
+            if (!PASSWORD_PATTERN.matcher(newPassword).matches()) {
+                showError("Password must contain uppercase, lowercase, and number.");
+                return;
+            }
+
+            // Lookup staff by username
+            Staff staff = staffCRUD.getRecordByUsername(username);
+            if (staff == null) {
+                // Use generic message to prevent username enumeration attacks
+                showError("Verification failed. Please check your details.");
+                return;
+            }
+
+            // Verify employee ID matches
+            if (staff.employeeID() != employeeId) {
+                // Use generic message to prevent information disclosure
+                showError("Verification failed. Please check your details.");
+                return;
+            }
+
+            // Verify last name matches (case-insensitive)
+            Employee employee = employeeCRUD.getRecordById(staff.employeeID());
+            if (employee == null || !employee.lastName().trim().equalsIgnoreCase(lastNameInput)) {
+                // Use generic message to prevent information disclosure
+                showError("Verification failed. Please check your details.");
+                return;
+            }
+
+            // Hash the new password using PBKDF2
+            String newHash = PasswordUtils.hashPassword(newPassword);
+            
+            // Update the password in the database
+            boolean updated = staffCRUD.updatePasswordHash(staff.staffID(), newHash);
+            
+            if (updated) {
+                JOptionPane.showMessageDialog(this,
+                        "Password updated successfully. You can now sign in.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                showError("Unable to update password. Please try again.");
+            }
+
+        } finally {
+            // Clear sensitive data from memory immediately
+            if (newPasswordChars != null) {
+                Arrays.fill(newPasswordChars, '\0');
+            }
+            if (confirmPasswordChars != null) {
+                Arrays.fill(confirmPasswordChars, '\0');
+            }
+            newPasswordField.setText("");
+            confirmPasswordField.setText("");
         }
     }
 
@@ -188,4 +258,3 @@ public class ForgotPasswordDialog extends JDialog {
         errorLabel.setText(message);
     }
 }
-

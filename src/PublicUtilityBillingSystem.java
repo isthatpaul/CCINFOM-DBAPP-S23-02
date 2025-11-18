@@ -55,9 +55,9 @@ public class PublicUtilityBillingSystem {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             System.setProperty("awt.useSystemAAFontSettings", "on");
             System.setProperty("swing.aatext", "true");
-            System.out.println("✓ System Look and Feel applied successfully");
+            System.out.println("System Look and Feel applied successfully");
         } catch (Exception e) {
-            System.err.println("⚠ Could not set Look and Feel: " + e.getMessage());
+            System.err.println("Could not set Look and Feel: " + e.getMessage());
         }
     }
 
@@ -66,9 +66,9 @@ public class PublicUtilityBillingSystem {
         boolean connected = DatabaseConnection.testConnection();
 
         if (connected) {
-            System.out.println("✓ Database connection successful");
+            System.out.println("Database connection successful");
         } else {
-            System.err.println("✗ Database connection failed!");
+            System.err.println("Database connection failed!");
             System.err.println("  Please check:");
             System.err.println("  - MySQL server is running");
             System.err.println("  - Database: public_utility_billing_system exists");
@@ -78,14 +78,14 @@ public class PublicUtilityBillingSystem {
     }
 
     private static void initializeApplication() {
-        System.out.println("✓ Creating login window...");
+        System.out.println("Creating login window...");
 
         LoginFrame loginFrame = new LoginFrame();
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setVisible(true);
 
-        System.out.println("✓ Application started successfully!");
-        System.out.println("✓ Login window displayed");
+        System.out.println("Application started successfully!");
+        System.out.println("Login window displayed");
         System.out.println();
         System.out.println("Waiting for user authentication...");
         System.out.println("==========================================================");
