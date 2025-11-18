@@ -34,7 +34,7 @@ public class ColorScheme {
 
     // Table Colors
     public static final Color TABLE_HEADER_BG = PRIMARY;
-    public static final Color TABLE_HEADER_FG = Color.WHITE;
+    public static final Color TABLE_HEADER_FG = TEXT_PRIMARY;
     public static final Color TABLE_ROW_EVEN = Color.WHITE;
     public static final Color TABLE_ROW_ODD = new Color(249, 250, 251);
     public static final Color TABLE_SELECTION = new Color(219, 234, 254); // Light blue

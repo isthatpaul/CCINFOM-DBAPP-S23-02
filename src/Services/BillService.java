@@ -9,7 +9,6 @@ import Model.OverdueNoticeCRUD;
 
 import java.sql.Date;
 import java.util.Calendar;
-import java.util.List;
 
 public class BillService {
 
