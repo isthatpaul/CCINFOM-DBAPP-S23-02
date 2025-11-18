@@ -77,15 +77,15 @@ public class ReportsPanel extends JPanel {
         sidebarTitle.setBorder(BorderFactory.createEmptyBorder(0, 10, 15, 0));
         sidebar.add(sidebarTitle);
 
-        sidebar.add(createReportButton("📋 Customer Account Report",
+        sidebar.add(createReportButton("Customer Account Report",
                 "Lists all active customer accounts", () -> showCustomerAccountReport()));
-        sidebar.add(createReportButton("💵 Billing & Collection Report",
+        sidebar.add(createReportButton("Billing & Collection Report",
                 "Billing summaries and collections", () -> showBillingCollectionReport()));
-        sidebar.add(createReportButton("⚠️ Outstanding/Overdue Report",
+        sidebar.add(createReportButton("Outstanding/Overdue Report",
                 "Unpaid or overdue bills", () -> showOverdueReport()));
         sidebar.add(createReportButton("💰 Revenue Report",
                 "Overall revenue by utility type", () -> showRevenueReport()));
-        sidebar.add(createReportButton("📊 Consumption Analysis",
+        sidebar.add(createReportButton("Consumption Analysis",
                 "Usage patterns and trends", () -> showConsumptionReport()));
 
         sidebar.add(Box.createVerticalGlue());

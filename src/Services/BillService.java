@@ -4,7 +4,6 @@ import Model.Bill;
 import Model.BillCRUD;
 import Model.Consumption;
 import Model.Rate;
-import Model.OverdueNotice;
 import Model.OverdueNoticeCRUD;
 
 import java.sql.Date;

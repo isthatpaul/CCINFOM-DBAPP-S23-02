@@ -266,7 +266,7 @@ public class MeterAssignmentFormDialog extends JDialog {
         }
 
         // Get staff ID (for now, use a placeholder or get from session)
-        int assignedByStaffID = 1; // TODO: Get from current logged-in staff
+        int assignedByStaffID = 1; 
 
         int assignmentID = (assignment != null) ? assignment.assignmentID() : 0;
         Date lastUpdated = new Date(System.currentTimeMillis());

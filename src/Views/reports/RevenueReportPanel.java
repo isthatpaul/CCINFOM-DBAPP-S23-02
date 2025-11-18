@@ -73,7 +73,7 @@ public class RevenueReportPanel extends JPanel {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(ColorScheme.BACKGROUND);
 
-        JLabel titleLabel = new JLabel("💰 Revenue Report");
+        JLabel titleLabel = new JLabel("Revenue Report");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(ColorScheme.TEXT_PRIMARY);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
