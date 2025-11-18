@@ -156,17 +156,17 @@ public class MainFrame extends JFrame {
         sidebar.add(Box.createVerticalStrut(20));
 
         // Navigation buttons
-        sidebar.add(createNavButton("🏠 Dashboard", () -> showDashboard()));
-        sidebar.add(createNavButton("👥 Customers", () -> showCustomers()));
-        sidebar.add(createNavButton("⚡ Meters", () -> showMeters()));
-        sidebar.add(createNavButton("🔗 Meter Assignment", () -> showMeterAssignment()));
-        sidebar.add(createNavButton("📄 Bills", () -> showBills()));
-        sidebar.add(createNavButton("💳 Payments", () -> showPayments()));
-        sidebar.add(createNavButton("👔 Employees", () -> showEmployees()));
-        sidebar.add(createNavButton("🔧 Utility Types", () -> showUtilityTypes()));
-        sidebar.add(createNavButton("💰 Rates", () -> showRates()));
+        sidebar.add(createNavButton("Dashboard", () -> showDashboard()));
+        sidebar.add(createNavButton("Customers", () -> showCustomers()));
+        sidebar.add(createNavButton("Meters", () -> showMeters()));
+        sidebar.add(createNavButton("Meter Assignment", () -> showMeterAssignment()));
+        sidebar.add(createNavButton("Bills", () -> showBills()));
+        sidebar.add(createNavButton("Payments", () -> showPayments()));
+        sidebar.add(createNavButton("Employees", () -> showEmployees()));
+        sidebar.add(createNavButton("Utility Types", () -> showUtilityTypes()));
+        sidebar.add(createNavButton("Rates", () -> showRates()));
         sidebar.add(Box.createVerticalStrut(20));
-        sidebar.add(createNavButton("📊 Reports", () -> showReports()));
+        sidebar.add(createNavButton("Reports", () -> showReports()));
 
         sidebar.add(Box.createVerticalGlue());
 
