@@ -6,7 +6,6 @@ import Services.CustomerService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Date;
 
 /**
  * Dialog for adding/editing customer records

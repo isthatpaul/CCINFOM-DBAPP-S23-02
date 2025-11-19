@@ -32,7 +32,7 @@ public class AppConfig {
     public static final String EXPORT_PDF_EXTENSION = ".pdf";
 
     // Business Rules
-    public static final int DEFAULT_BILL_DUE_DAYS = 15;
+    public static final int DEFAULT_BILL_DUE_DAYS = 21;
     public static final double OVERDUE_PENALTY_RATE = 0.02; // 2% per month
     public static final double MIN_PAYMENT_AMOUNT = 1.00;
     public static final int MAX_PARTIAL_PAYMENTS = 10;
@@ -50,9 +50,8 @@ public class AppConfig {
     public static final boolean AUTO_BACKUP = true;
     public static final int AUTO_BACKUP_INTERVAL_HOURS = 24;
 
-    private AppConfig() {
-        // Private constructor to prevent instantiation
-    }
+    private AppConfig() {}
+   
 
     /**
      * Get full application name with version

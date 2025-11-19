@@ -77,6 +77,30 @@ public class RateCRUD
         return null;
     }
 
+    // Add this method to your RateCRUD.java
+    public Rate findActiveRateForUtility(int utilityTypeId, Date readingDate) {
+        // Find the most recent rate that was effective on or before the reading date
+        String sql = "SELECT * FROM Rate WHERE UtilityTypeID = ? AND EffectiveDate <= ? ORDER BY EffectiveDate DESC LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, utilityTypeId);
+            ps.setDate(2, readingDate);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Rate(
+                            rs.getInt("RateID"),
+                            rs.getInt("UtilityTypeID"),
+                            rs.getDouble("RatePerUnit"),
+                            rs.getDate("EffectiveDate")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // UPDATE
     public boolean updateRecord(Rate rate) {
         String sql = "UPDATE Rate SET UtilityTypeID = ?, RatePerUnit = ?, EffectiveDate = ? WHERE RateID = ?";

@@ -83,7 +83,7 @@ public class ReportsPanel extends JPanel {
                 "Billing summaries and collections", () -> showBillingCollectionReport()));
         sidebar.add(createReportButton("Outstanding/Overdue Report",
                 "Unpaid or overdue bills", () -> showOverdueReport()));
-        sidebar.add(createReportButton("💰 Revenue Report",
+        sidebar.add(createReportButton("Revenue Report",
                 "Overall revenue by utility type", () -> showRevenueReport()));
         sidebar.add(createReportButton("Consumption Analysis",
                 "Usage patterns and trends", () -> showConsumptionReport()));

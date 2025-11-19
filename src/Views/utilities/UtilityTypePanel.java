@@ -10,10 +10,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Utility Type Management Panel
- * Assigned to: SAMONTE, Joshua Carlos B.
- */
 public class UtilityTypePanel extends JPanel {
 
     private StyledTable utilityTypeTable;
@@ -64,7 +60,8 @@ public class UtilityTypePanel extends JPanel {
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -99,13 +96,19 @@ public class UtilityTypePanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(addButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(editButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Filter:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(activeFilter);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
@@ -144,7 +147,10 @@ public class UtilityTypePanel extends JPanel {
     }
 
     public void refreshData() {
-        SwingWorker<List<UtilityType>, Void> worker = new SwingWorker<List<UtilityType>, Void>() {
+        if(searchBar != null) searchBar.clearSearchText();
+        if(activeFilter != null) activeFilter.setSelectedIndex(0);
+        
+        SwingWorker<List<UtilityType>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<UtilityType> doInBackground() {
                 return utilityTypeCRUD.getAllRecords();
@@ -186,7 +192,7 @@ public class UtilityTypePanel extends JPanel {
         String selectedFilter = (String) activeFilter.getSelectedItem();
         String searchText = searchBar.getSearchText();
 
-        SwingWorker<List<UtilityType>, Void> worker = new SwingWorker<List<UtilityType>, Void>() {
+        SwingWorker<List<UtilityType>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<UtilityType> doInBackground() {
                 List<UtilityType> allTypes = utilityTypeCRUD.getAllRecords();

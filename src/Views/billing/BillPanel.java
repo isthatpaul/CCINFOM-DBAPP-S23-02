@@ -2,18 +2,14 @@ package Views.billing;
 
 import Views.components.*;
 import Model.*;
+import Services.BillService;
 import config.AppConfig;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Bill Management Panel
- * Assigned to: CRISOLOGO, Paul Martin Ryan A. & LUIS, Kamillu Raphael C.
- */
 public class BillPanel extends JPanel {
 
     private StyledTable billTable;
@@ -23,16 +19,18 @@ public class BillPanel extends JPanel {
     private Staff currentStaff;
     private SearchBar searchBar;
     private JComboBox<String> statusFilter;
+    private BillService billService;
 
     public BillPanel(Staff staff) {
         this.currentStaff = staff;
         billCRUD = new BillCRUD();
         customerCRUD = new CustomerCRUD();
+        billService = new BillService();
         setLayout(new BorderLayout());
         setBackground(ColorScheme.BACKGROUND);
         initComponents();
     }
-
+    
     private void initComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout(0, 20));
         mainPanel.setBackground(ColorScheme.BACKGROUND);
@@ -53,22 +51,20 @@ public class BillPanel extends JPanel {
 
         add(mainPanel);
     }
-
+    
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(ColorScheme.BACKGROUND);
-
         JLabel titleLabel = new JLabel("Bill Management");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(ColorScheme.TEXT_PRIMARY);
-
         panel.add(titleLabel, BorderLayout.WEST);
-
         return panel;
     }
-
+    
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -85,7 +81,7 @@ public class BillPanel extends JPanel {
         statusFilter.addActionListener(e -> applyFilter());
 
         searchBar = new SearchBar(250);
-        searchBar.setPlaceholder("Search by Customer ID or Bill ID...");
+        searchBar.setPlaceholder("Search by Customer or Bill ID...");
         searchBar.setSearchListener(new SearchBar.SearchListener() {
             @Override
             public void onSearch(String searchText) {
@@ -105,19 +101,26 @@ public class BillPanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(generateButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(viewButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(applyPenaltiesButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Status:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(statusFilter);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
     }
-
+    
     private JPanel createTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -137,14 +140,15 @@ public class BillPanel extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(billTable);
         scrollPane.setBorder(null);
-
         panel.add(scrollPane, BorderLayout.CENTER);
-
         return panel;
     }
-
+    
     public void refreshData() {
-        SwingWorker<List<Bill>, Void> worker = new SwingWorker<List<Bill>, Void>() {
+        statusFilter.setSelectedIndex(0);
+        searchBar.clearSearchText(); 
+        
+        SwingWorker<List<Bill>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Bill> doInBackground() {
                 return billCRUD.getAllRecords();
@@ -153,61 +157,49 @@ public class BillPanel extends JPanel {
             @Override
             protected void done() {
                 try {
-                    List<Bill> bills = get();
-                    displayBills(bills);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(BillPanel.this,
-                            "Error loading bills: " + e.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+                    displayBills(get());
+                } catch (Exception e) { e.printStackTrace(); }
             }
         };
-
         worker.execute();
     }
-
+    
     private void displayBills(List<Bill> bills) {
         tableModel.setRowCount(0);
-
         for (Bill bill : bills) {
-            String customerName = getCustomerName(bill.customerID());
-            String generatedBy = "Staff ID: " + bill.generatedByStaffID();
-
             tableModel.addRow(new Object[]{
                     bill.billID(),
-                    customerName,
+                    getCustomerName(bill.customerID()),
                     bill.amountDue(),
                     bill.dueDate(),
                     bill.status(),
-                    generatedBy
+                    "Staff ID: " + bill.generatedByStaffID()
             });
         }
     }
-
+    
     private String getCustomerName(int customerID) {
         Customer customer = customerCRUD.getRecordById(customerID);
-        if (customer != null) {
-            return customer.firstName() + " " + customer.lastName();
-        }
-        return "Unknown";
+        return customer != null ? customer.firstName() + " " + customer.lastName() : "Unknown";
     }
 
     private void applyFilter() {
         String selectedStatus = (String) statusFilter.getSelectedItem();
-        String searchText = searchBar.getSearchText();
+        String searchText = searchBar.getSearchText().toLowerCase();
 
-        SwingWorker<List<Bill>, Void> worker = new SwingWorker<List<Bill>, Void>() {
+        SwingWorker<List<Bill>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Bill> doInBackground() {
                 List<Bill> allBills = billCRUD.getAllRecords();
 
                 return allBills.stream()
                         .filter(bill -> {
-                            boolean statusMatch = "All".equals(selectedStatus) || bill.status().equals(selectedStatus);
+                            boolean statusMatch = "All".equals(selectedStatus) || bill.status().equalsIgnoreCase(selectedStatus);
+                            
                             boolean searchMatch = searchText.isEmpty() ||
-                                    String.valueOf(bill.billID()).contains(searchText) ||
-                                    String.valueOf(bill.customerID()).contains(searchText);
+                                    getCustomerName(bill.customerID()).toLowerCase().contains(searchText) ||
+                                    String.valueOf(bill.billID()).contains(searchText);
+
                             return statusMatch && searchMatch;
                         })
                         .collect(Collectors.toList());
@@ -216,14 +208,12 @@ public class BillPanel extends JPanel {
             @Override
             protected void done() {
                 try {
-                    List<Bill> filtered = get();
-                    displayBills(filtered);
+                    displayBills(get());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
-
         worker.execute();
     }
 
@@ -238,14 +228,11 @@ public class BillPanel extends JPanel {
             refreshData();
         }
     }
-
+    
     private void viewBillDetails() {
         int selectedRow = billTable.getSelectedRow();
         if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a bill to view.",
-                    "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a bill to view.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -256,10 +243,9 @@ public class BillPanel extends JPanel {
             showBillDetailsDialog(bill);
         }
     }
-
+    
     private void showBillDetailsDialog(Bill bill) {
         Customer customer = customerCRUD.getRecordById(bill.customerID());
-        
         String details = String.format(
                 "Bill ID: %d\n" +
                 "Customer: %s %s (ID: %d)\n" +
@@ -283,54 +269,33 @@ public class BillPanel extends JPanel {
                 bill.generatedByStaffID()
         );
 
-        JOptionPane.showMessageDialog(this,
-                details,
-                "Bill Details",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, details, "Bill Details", JOptionPane.INFORMATION_MESSAGE);
     }
-
+    
     private void deleteBill() {
         int selectedRow = billTable.getSelectedRow();
         if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select a bill to delete.",
-                    "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a bill to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         int billID = (int) tableModel.getValueAt(selectedRow, 0);
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete Bill ID: " + billID + "?",
-                "Confirm Deletion",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete Bill ID: " + billID + "?", "Confirm Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
         if (confirm == JOptionPane.YES_OPTION) {
             boolean success = billCRUD.deleteRecord(billID);
             if (success) {
-                JOptionPane.showMessageDialog(this,
-                        "Bill deleted successfully!",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Bill deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshData();
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to delete bill.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to delete bill.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
-
-    /**
-     * Transaction 4: Overdue Tracking & Penalty Application
-     * Assigned to: ATACADOR, Juan Lorenzo N.
-     */
+    
     private void applyOverduePenalties() {
         int confirm = JOptionPane.showConfirmDialog(this,
-                "This will apply penalties to all overdue bills.\n" +
+                "This will apply penalties to all applicable overdue bills.\n" +
                 "Penalty Rate: " + (AppConfig.OVERDUE_PENALTY_RATE * 100) + "% of amount due\n\n" +
                 "Continue?",
                 "Apply Penalties",
@@ -341,93 +306,28 @@ public class BillPanel extends JPanel {
             return;
         }
 
-        SwingWorker<Integer, Void> worker = new SwingWorker<Integer, Void>() {
+        SwingWorker<Integer, Void> worker = new SwingWorker<>() {
             @Override
             protected Integer doInBackground() {
-                int penaltiesApplied = 0;
-                
-                List<Bill> allBills = billCRUD.getAllRecords();
-                java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
-                
-                OverdueNoticeCRUD overdueNoticeCRUD = new OverdueNoticeCRUD();
-                
-                for (Bill bill : allBills) {
-                    // Check if bill is unpaid/partially paid and past due date
-                    if (("UNPAID".equals(bill.status()) || "PARTIALLY_PAID".equals(bill.status())) 
-                        && bill.dueDate().before(currentDate)) {
-                        
-                        // Calculate penalty (2% of amount due)
-                        double penaltyAmount = bill.amountDue() * AppConfig.OVERDUE_PENALTY_RATE;
-                        
-                        // Create overdue notice
-                        OverdueNotice notice = new OverdueNotice(
-                                0, // Auto-generated
-                                bill.billID(),
-                                currentDate,
-                                penaltyAmount,
-                                currentDate,
-                                "PENDING",
-                                currentStaff.staffID()
-                        );
-                        
-                        boolean noticeCreated = overdueNoticeCRUD.addRecord(notice);
-                        
-                        if (noticeCreated) {
-                            // Update bill amount and status
-                            double newAmountDue = bill.amountDue() + penaltyAmount;
-                            
-                            Bill updatedBill = new Bill(
-                                    bill.billID(),
-                                    bill.customerID(),
-                                    bill.consumptionID(),
-                                    bill.rateID(),
-                                    newAmountDue,
-                                    bill.dueDate(),
-                                    "OVERDUE",
-                                    bill.generatedByStaffID(),
-                                    bill.technicianID()
-                            );
-                            
-                            boolean billUpdated = billCRUD.updateRecord(updatedBill);
-                            if (billUpdated) {
-                                penaltiesApplied++;
-                            }
-                        }
-                    }
-                }
-                
-                return penaltiesApplied;
+                return billService.applyPenaltiesToOverdueBills(currentStaff.staffID());
             }
 
             @Override
             protected void done() {
                 try {
                     int count = get();
-                    
                     if (count > 0) {
-                        JOptionPane.showMessageDialog(BillPanel.this,
-                                "Penalties applied successfully!\n\n" +
-                                "Bills affected: " + count + "\n" +
-                                "Penalty rate: " + (AppConfig.OVERDUE_PENALTY_RATE * 100) + "%",
-                                "Success",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(BillPanel.this, "Penalties applied successfully to " + count + " bill(s).", "Success", JOptionPane.INFORMATION_MESSAGE);
                         refreshData();
                     } else {
-                        JOptionPane.showMessageDialog(BillPanel.this,
-                                "No overdue bills found.",
-                                "Information",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(BillPanel.this, "No overdue bills were found that required a penalty.", "Information", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(BillPanel.this,
-                            "Error applying penalties: " + e.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(BillPanel.this, "An error occurred while applying penalties: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     e.printStackTrace();
                 }
             }
         };
-
         worker.execute();
     }
 }

@@ -94,6 +94,62 @@ public class BillCRUD
         return null;
     }
 
+    // Add this method to your BillCRUD.java
+    public Bill getLatestBillForConsumption(int consumptionId) {
+        String sql = "SELECT * FROM Bill WHERE ConsumptionID = ? ORDER BY BillID DESC LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, consumptionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Bill(
+                            rs.getInt("BillID"),
+                            rs.getInt("CustomerID"),
+                            rs.getInt("ConsumptionID"),
+                            rs.getInt("RateID"),
+                            rs.getDouble("AmountDue"),
+                            rs.getDate("DueDate"),
+                            rs.getString("Status"),
+                            rs.getInt("GeneratedByStaffID"),
+                            rs.getInt("TechnicianID")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Add this method to your existing BillCRUD.java file
+
+    public List<Bill> getBillsByCustomerId(int customerId) {
+        List<Bill> bills = new ArrayList<>();
+        String sql = "SELECT * FROM Bill WHERE CustomerID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, customerId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    bills.add(new Bill(
+                        rs.getInt("BillID"),
+                        rs.getInt("CustomerID"),
+                        rs.getInt("ConsumptionID"),
+                        rs.getInt("RateID"),
+                        rs.getDouble("AmountDue"),
+                        rs.getDate("DueDate"),
+                        rs.getString("Status"),
+                        rs.getInt("GeneratedByStaffID"),
+                        rs.getInt("TechnicianID")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bills;
+    }
+
     // UPDATE
     public boolean updateRecord(Bill bill) {
         String sql = "UPDATE Bill SET CustomerID = ?, ConsumptionID = ?, RateID = ?, AmountDue = ?, DueDate = ?, Status = ?, GeneratedByStaffID = ?, TechnicianID = ? WHERE BillID = ?";

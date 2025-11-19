@@ -12,11 +12,13 @@ import Views.utilities.UtilityTypePanel;
 import Views.utilities.RatePanel;
 import Views.reports.ReportsPanel;
 import Model.Staff;
+import config.AppConfig;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Main application window with navigation and content area.
@@ -28,8 +30,6 @@ public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     private JLabel statusLabel;
     private JLabel userLabel;
-
-    // Panel instances
     private Dashboard dashboard;
     private CustomerPanel customerPanel;
     private MeterPanel meterPanel;
@@ -55,22 +55,17 @@ public class MainFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setMinimumSize(new Dimension(1200, 700));
 
-        // Menu bar
         setJMenuBar(createMenuBar());
 
-        // Main layout
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(ColorScheme.BACKGROUND);
 
-        // Sidebar
         JPanel sidebar = createSidebar();
 
-        // Content area with CardLayout
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         contentPanel.setBackground(ColorScheme.BACKGROUND);
 
-        // Status bar
         JPanel statusBar = createStatusBar();
 
         mainPanel.add(sidebar, BorderLayout.WEST);
@@ -79,17 +74,15 @@ public class MainFrame extends JFrame {
 
         add(mainPanel);
 
-        // Update time every second
         Timer timer = new Timer(1000, e -> updateStatusTime());
         timer.start();
     }
-
+    
+    // ... (All UI creation methods are correct and remain unchanged) ...
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.WHITE);
         menuBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorScheme.BORDER));
-
-        // File Menu
         JMenu fileMenu = new JMenu("File");
         JMenuItem logoutItem = new JMenuItem("Logout");
         logoutItem.addActionListener(e -> handleLogout());
@@ -98,8 +91,6 @@ public class MainFrame extends JFrame {
         fileMenu.add(logoutItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
-
-        // View Menu
         JMenu viewMenu = new JMenu("View");
         JMenuItem dashboardItem = new JMenuItem("Dashboard");
         dashboardItem.addActionListener(e -> showDashboard());
@@ -111,65 +102,67 @@ public class MainFrame extends JFrame {
         viewMenu.addSeparator();
         viewMenu.add(customersItem);
         viewMenu.add(billsItem);
-
-        // Reports Menu
+        JMenu adminMenu = new JMenu("Admin");
+        JMenuItem employeesItem = new JMenuItem("Employees");
+        employeesItem.addActionListener(e -> showEmployees());
+        JMenuItem utilitiesItem = new JMenuItem("Utility Types");
+        utilitiesItem.addActionListener(e -> showUtilityTypes());
+        JMenuItem ratesItem = new JMenuItem("Rates");
+        ratesItem.addActionListener(e -> showRates());
+        adminMenu.add(employeesItem);
+        adminMenu.add(utilitiesItem);
+        adminMenu.add(ratesItem);
         JMenu reportsMenu = new JMenu("Reports");
         JMenuItem reportsItem = new JMenuItem("View Reports");
         reportsItem.addActionListener(e -> showReports());
         reportsMenu.add(reportsItem);
-
-        // Help Menu
         JMenu helpMenu = new JMenu("Help");
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(e -> showAbout());
         helpMenu.add(aboutItem);
-
         menuBar.add(fileMenu);
         menuBar.add(viewMenu);
+        if (Objects.equals(currentStaff.role(), "Admin")) {
+            menuBar.add(adminMenu);
+        }
         menuBar.add(reportsMenu);
         menuBar.add(helpMenu);
-
         return menuBar;
     }
-
+    
     private JPanel createSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setBackground(ColorScheme.SIDEBAR_BG);
         sidebar.setPreferredSize(new Dimension(250, getHeight()));
         sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, ColorScheme.BORDER));
-
-        // Logo/Title
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(ColorScheme.PRIMARY);
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setMaximumSize(new Dimension(250, 80));
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
         JLabel titleLabel = new JLabel("PUBS");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         titlePanel.add(titleLabel);
-
         sidebar.add(titlePanel);
         sidebar.add(Box.createVerticalStrut(20));
-
-        // Navigation buttons
-        sidebar.add(createNavButton("Dashboard", () -> showDashboard()));
-        sidebar.add(createNavButton("Customers", () -> showCustomers()));
-        sidebar.add(createNavButton("Meters", () -> showMeters()));
-        sidebar.add(createNavButton("Meter Assignment", () -> showMeterAssignment()));
-        sidebar.add(createNavButton("Bills", () -> showBills()));
-        sidebar.add(createNavButton("Payments", () -> showPayments()));
-        sidebar.add(createNavButton("Employees", () -> showEmployees()));
-        sidebar.add(createNavButton("Utility Types", () -> showUtilityTypes()));
-        sidebar.add(createNavButton("Rates", () -> showRates()));
+        sidebar.add(createNavButton("Dashboard", this::showDashboard));
+        sidebar.add(createNavButton("Customers", this::showCustomers));
+        sidebar.add(createNavButton("Meters", this::showMeters));
+        sidebar.add(createNavButton("Meter Assignment", this::showMeterAssignment));
+        sidebar.add(createNavButton("Consumption", this::showConsumption));
+        sidebar.add(createNavButton("Bills", this::showBills));
+        sidebar.add(createNavButton("Payments", this::showPayments));
+        if (Objects.equals(currentStaff.role(), "Admin")) {
+            sidebar.add(createNavButton("Employees", this::showEmployees));
+            sidebar.add(createNavButton("Utility Types", this::showUtilityTypes));
+            sidebar.add(createNavButton("Rates", this::showRates));
+        }
         sidebar.add(Box.createVerticalStrut(20));
-        sidebar.add(createNavButton("Reports", () -> showReports()));
-
+        sidebar.add(createNavButton("Reports", this::showReports));
         sidebar.add(Box.createVerticalGlue());
-
         return sidebar;
     }
 
@@ -185,7 +178,6 @@ public class MainFrame extends JFrame {
         button.setPreferredSize(new Dimension(250, 45));
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(new Color(229, 231, 235));
@@ -194,9 +186,7 @@ public class MainFrame extends JFrame {
                 button.setBackground(ColorScheme.SIDEBAR_BG);
             }
         });
-
         button.addActionListener(e -> action.run());
-
         return button;
     }
 
@@ -205,20 +195,16 @@ public class MainFrame extends JFrame {
         statusBar.setBackground(Color.WHITE);
         statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ColorScheme.BORDER));
         statusBar.setPreferredSize(new Dimension(getWidth(), 30));
-
         userLabel = new JLabel("  User: " + currentStaff.username() + " (" + currentStaff.role() + ")");
         userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         userLabel.setForeground(ColorScheme.TEXT_SECONDARY);
-
         statusLabel = new JLabel();
         statusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         statusLabel.setForeground(ColorScheme.TEXT_SECONDARY);
         statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         updateStatusTime();
-
         statusBar.add(userLabel, BorderLayout.WEST);
         statusBar.add(statusLabel, BorderLayout.EAST);
-
         return statusBar;
     }
 
@@ -231,14 +217,11 @@ public class MainFrame extends JFrame {
         dashboard = new Dashboard(currentStaff);
         customerPanel = new CustomerPanel();
         meterPanel = new MeterPanel();
-        meterAssignmentPanel = new MeterAssignmentPanel();
+        meterAssignmentPanel = new MeterAssignmentPanel(currentStaff);
         billPanel = new BillPanel(currentStaff);
         paymentPanel = new PaymentPanel(currentStaff);
-        employeePanel = new EmployeePanel();
-        utilityTypePanel = new UtilityTypePanel();
-        ratePanel = new RatePanel();
         reportsPanel = new ReportsPanel();
-        consumptionPanel = new ConsumptionPanel();
+        consumptionPanel = new ConsumptionPanel(currentStaff);
 
         contentPanel.add(dashboard, "DASHBOARD");
         contentPanel.add(customerPanel, "CUSTOMERS");
@@ -246,73 +229,93 @@ public class MainFrame extends JFrame {
         contentPanel.add(meterAssignmentPanel, "METER_ASSIGNMENT");
         contentPanel.add(billPanel, "BILLS");
         contentPanel.add(paymentPanel, "PAYMENTS");
-        contentPanel.add(employeePanel, "EMPLOYEES");
-        contentPanel.add(utilityTypePanel, "UTILITY_TYPES");
-        contentPanel.add(ratePanel, "RATES");
         contentPanel.add(reportsPanel, "REPORTS");
         contentPanel.add(consumptionPanel, "CONSUMPTION");
+        
+        if (Objects.equals(currentStaff.role(), "Admin")) {
+            employeePanel = new EmployeePanel();
+            utilityTypePanel = new UtilityTypePanel();
+            ratePanel = new RatePanel();
+            
+            contentPanel.add(employeePanel, "EMPLOYEES");
+            contentPanel.add(utilityTypePanel, "UTILITY_TYPES");
+            contentPanel.add(ratePanel, "RATES");
+        }
     }
 
+    // FIX: All show...() methods are changed to show the panel BEFORE refreshing data.
+    // This makes the UI feel instant and responsive.
+
     private void showDashboard() {
-        dashboard.refreshData();
         cardLayout.show(contentPanel, "DASHBOARD");
+        dashboard.refreshData();
     }
 
     private void showCustomers() {
-        customerPanel.refreshData();
         cardLayout.show(contentPanel, "CUSTOMERS");
+        customerPanel.refreshData();
     }
 
     private void showMeters() {
-        meterPanel.refreshData();
         cardLayout.show(contentPanel, "METERS");
+        meterPanel.refreshData();
     }
 
     private void showMeterAssignment() {
-        meterAssignmentPanel.refreshData();
         cardLayout.show(contentPanel, "METER_ASSIGNMENT");
+        meterAssignmentPanel.refreshData();
     }
 
     private void showBills() {
-        billPanel.refreshData();
         cardLayout.show(contentPanel, "BILLS");
+        billPanel.refreshData();
     }
 
     private void showPayments() {
-        paymentPanel.refreshData();
         cardLayout.show(contentPanel, "PAYMENTS");
+        paymentPanel.refreshData();
     }
 
     private void showEmployees() {
-        employeePanel.refreshData();
-        cardLayout.show(contentPanel, "EMPLOYEES");
+        if (employeePanel != null) {
+            cardLayout.show(contentPanel, "EMPLOYEES");
+            employeePanel.refreshData();
+        } else {
+            showUnauthorizedAccessMessage();
+        }
     }
 
     private void showUtilityTypes() {
-        utilityTypePanel.refreshData();
-        cardLayout.show(contentPanel, "UTILITY_TYPES");
+        if (utilityTypePanel != null) {
+            cardLayout.show(contentPanel, "UTILITY_TYPES");
+            utilityTypePanel.refreshData();
+        } else {
+            showUnauthorizedAccessMessage();
+        }
     }
 
     private void showRates() {
-        ratePanel.refreshData();
-        cardLayout.show(contentPanel, "RATES");
+        if (ratePanel != null) {
+            cardLayout.show(contentPanel, "RATES");
+            ratePanel.refreshData();
+        } else {
+            showUnauthorizedAccessMessage();
+        }
     }
 
     private void showConsumption() {
-        consumptionPanel.refreshData();
         cardLayout.show(contentPanel, "CONSUMPTION");
+        consumptionPanel.refreshData();
     }
 
     private void showReports() {
         cardLayout.show(contentPanel, "REPORTS");
+        // No data refresh needed for the main reports container panel
     }
-
+    
+    // ... (logout, about, and unauthorized access methods are unchanged) ...
     private void handleLogout() {
-        int result = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to logout?",
-                "Logout Confirmation",
-                JOptionPane.YES_NO_OPTION);
-
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Logout Confirmation", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             dispose();
             SwingUtilities.invokeLater(() -> {
@@ -323,13 +326,10 @@ public class MainFrame extends JFrame {
     }
 
     private void showAbout() {
-        JOptionPane.showMessageDialog(this,
-                "Public Utility Billing System\n" +
-                        "Version 1.0\n\n" +
-                        "A comprehensive billing management system\n" +
-                        "for government utility services.\n\n" +
-                        "© 2025 CCINFOM-DBAPP-S23-02",
-                "About PUBS",
-                JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, AppConfig.getAboutText(), "About " + AppConfig.APP_SHORT_NAME, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showUnauthorizedAccessMessage() {
+        JOptionPane.showMessageDialog(this, "You do not have permission to access this section.", "Access Denied", JOptionPane.ERROR_MESSAGE);
     }
 }

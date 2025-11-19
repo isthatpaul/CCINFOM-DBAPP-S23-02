@@ -91,6 +91,34 @@ public class CustomerCRUD
         return null;
     }
 
+    public Customer getCustomerByMeterId(int meterId) {
+        String sql = "SELECT c.* FROM Customer c JOIN MeterAssignment ma ON c.CustomerID = ma.CustomerID WHERE ma.MeterID = ? AND ma.Status = 'Active'";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, meterId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Customer(
+                            rs.getInt("CustomerID"),
+                            rs.getString("AccountNumber"),
+                            rs.getString("FirstName"),
+                            rs.getString("LastName"),
+                            rs.getString("Street"),
+                            rs.getString("City"),
+                            rs.getString("Province"),
+                            rs.getString("ZipCode"),
+                            rs.getString("ContactNumber"),
+                            rs.getDate("CreatedDate"),
+                            rs.getString("BillingStatus")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // UPDATE
     public boolean updateRecord(Customer customer) {
         String sql = "UPDATE Customer SET AccountNumber = ?, FirstName = ?, LastName = ?, Street = ?, City = ?, Province = ?, ZipCode = ?, ContactNumber = ?, CreatedDate = ?, BillingStatus = ? WHERE CustomerID = ?";
@@ -114,6 +142,7 @@ public class CustomerCRUD
             return false;
         }
     }
+
 
     // DELETE
     public boolean deleteRecord(int id) {

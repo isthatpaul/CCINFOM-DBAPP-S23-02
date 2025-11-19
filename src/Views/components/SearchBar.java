@@ -1,107 +1,111 @@
 package Views.components;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-/**
- * Reusable search bar component with clear functionality
- */
 public class SearchBar extends JPanel {
-
     private JTextField searchField;
-    private JButton clearButton;
+    private StyledButton clearButton;
     private SearchListener searchListener;
+    private String placeholder;
+    private boolean isPlaceholderVisible = true;
 
     public interface SearchListener {
         void onSearch(String searchText);
         void onClear();
     }
 
-    public SearchBar() {
-        this(300);
-    }
-
-    public SearchBar(int width) {
+    public SearchBar(int columns) {
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        
+        searchField = new JTextField(columns);
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(1, 1, 1, 0, ColorScheme.BORDER),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
-        setMaximumSize(new Dimension(width, 35));
-        setPreferredSize(new Dimension(width, 35));
+        
+        clearButton = new StyledButton("x", StyledButton.ButtonType.DANGER);
+        clearButton.setPreferredSize(new Dimension(40, searchField.getPreferredSize().height));
+        clearButton.setVisible(false);
 
-        initComponents();
-    }
+        setPlaceholderLook();
 
-    private void initComponents() {
-        // Search icon label
-        JLabel searchIcon = new JLabel("🔍");
-        searchIcon.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        searchIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-
-        // Search text field
-        searchField = new JTextField();
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        searchField.setBorder(null);
-        searchField.setBackground(Color.WHITE);
-
-        // Add key listener for real-time search
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (searchListener != null) {
-                    searchListener.onSearch(searchField.getText());
+        searchField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (isPlaceholderVisible) {
+                    searchField.setText("");
+                    setRealTextLook();
+                }
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (searchField.getText().isEmpty()) {
+                    setPlaceholderLook();
                 }
             }
         });
 
-        // Clear button
-        clearButton = new JButton("✕");
-        clearButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        clearButton.setForeground(ColorScheme.TEXT_SECONDARY);
-        clearButton.setBackground(Color.WHITE);
-        clearButton.setBorderPainted(false);
-        clearButton.setFocusPainted(false);
-        clearButton.setContentAreaFilled(false);
-        clearButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        clearButton.setPreferredSize(new Dimension(25, 25));
-        clearButton.setVisible(false);
-
-        clearButton.addActionListener(e -> clearSearch());
-
-        // Show/hide clear button based on text
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                clearButton.setVisible(!searchField.getText().isEmpty());
-            }
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { handleTextChange(); }
+            public void removeUpdate(DocumentEvent e) { handleTextChange(); }
+            public void changedUpdate(DocumentEvent e) { handleTextChange(); }
         });
 
-        add(searchIcon, BorderLayout.WEST);
+        clearButton.addActionListener(e -> clearSearch());
+        
         add(searchField, BorderLayout.CENTER);
         add(clearButton, BorderLayout.EAST);
     }
+    
+    private void setPlaceholderLook() {
+        searchField.setForeground(ColorScheme.TEXT_SECONDARY);
+        searchField.setText(placeholder);
+        isPlaceholderVisible = true;
+    }
+    
+    private void setRealTextLook() {
+        searchField.setForeground(ColorScheme.TEXT_PRIMARY);
+        isPlaceholderVisible = false;
+    }
 
+    private void handleTextChange() {
+        boolean hasText = !searchField.getText().isEmpty() && !isPlaceholderVisible;
+        clearButton.setVisible(hasText);
+        if (searchListener != null && hasText) {
+            searchListener.onSearch(searchField.getText());
+        }
+    }
+    
     public void setSearchListener(SearchListener listener) {
         this.searchListener = listener;
     }
-
+    
     public String getSearchText() {
-        return searchField.getText();
+        return isPlaceholderVisible ? "" : searchField.getText();
     }
 
+    public void setPlaceholder(String text) {
+        this.placeholder = text;
+        if(isPlaceholderVisible) {
+            searchField.setText(placeholder);
+        }
+    }
+    
     public void clearSearch() {
         searchField.setText("");
-        clearButton.setVisible(false);
+        setPlaceholderLook();
         if (searchListener != null) {
-            searchListener.onClear();
+            searchListener.onClear(); // This is what causes the loop
         }
     }
 
-    public void setPlaceholder(String placeholder) {
-        searchField.setToolTipText(placeholder);
+    public void clearSearchText() {
+        SwingUtilities.invokeLater(() -> {
+            searchField.setText("");
+            if (!searchField.hasFocus()) {
+                setPlaceholderLook();
+            }
+        });
     }
 }

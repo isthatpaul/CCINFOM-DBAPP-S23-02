@@ -9,10 +9,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Employee Management Panel
- * Assigned to: CRISOLOGO, Paul Martin Ryan A.
- */
 public class EmployeePanel extends JPanel {
 
     private StyledTable employeeTable;
@@ -64,7 +60,8 @@ public class EmployeePanel extends JPanel {
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -96,11 +93,15 @@ public class EmployeePanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(addButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(editButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
@@ -131,7 +132,8 @@ public class EmployeePanel extends JPanel {
     }
 
     public void refreshData() {
-        SwingWorker<List<Employee>, Void> worker = new SwingWorker<List<Employee>, Void>() {
+        if(searchBar != null) searchBar.clearSearchText();
+        SwingWorker<List<Employee>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Employee> doInBackground() {
                 return employeeCRUD.getAllRecords();
@@ -178,10 +180,11 @@ public class EmployeePanel extends JPanel {
     }
 
     private void filterTable(String searchText) {
-        SwingWorker<List<Employee>, Void> worker = new SwingWorker<List<Employee>, Void>() {
+        SwingWorker<List<Employee>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Employee> doInBackground() {
                 List<Employee> allEmployees = employeeCRUD.getAllRecords();
+                if(searchText.isEmpty()) return allEmployees;
                 return allEmployees.stream()
                         .filter(e -> e.firstName().toLowerCase().contains(searchText.toLowerCase()) ||
                                 e.lastName().toLowerCase().contains(searchText.toLowerCase()) ||

@@ -1,6 +1,6 @@
 package Database;
 
-import config.AppConfig; // Add this import
+import config.AppConfig; 
 
 import java.sql.Connection;
 import java.sql.DriverManager;

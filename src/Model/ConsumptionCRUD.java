@@ -73,6 +73,28 @@ public class ConsumptionCRUD
         return null;
     }
 
+
+    public Consumption getLatestConsumptionForMeter(int meterId) {
+        String sql = "SELECT * FROM Consumption WHERE MeterID = ? ORDER BY ConsumptionID DESC LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, meterId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Consumption(
+                            rs.getInt("ConsumptionID"),
+                            rs.getInt("MeterID"),
+                            rs.getDouble("ConsumptionValue"),
+                            rs.getDate("ReadingDate")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // UPDATE
     public boolean updateRecord(Consumption cons) {
         String sql = "UPDATE Consumption SET ReadingDate = ?, ConsumptionValue = ?, MeterID = ? WHERE ConsumptionID = ?";

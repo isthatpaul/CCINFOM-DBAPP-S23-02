@@ -9,10 +9,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Payment Management Panel
- * Assigned to: SAMONTE, Joshua Carlos B.
- */
 public class PaymentPanel extends JPanel {
 
     private StyledTable paymentTable;
@@ -68,7 +64,8 @@ public class PaymentPanel extends JPanel {
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -100,11 +97,15 @@ public class PaymentPanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(processButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(viewButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
@@ -136,7 +137,8 @@ public class PaymentPanel extends JPanel {
     }
 
     public void refreshData() {
-        SwingWorker<List<Payment>, Void> worker = new SwingWorker<List<Payment>, Void>() {
+        if (searchBar != null) searchBar.clearSearchText();
+        SwingWorker<List<Payment>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Payment> doInBackground() {
                 return paymentCRUD.getAllRecords();
@@ -190,10 +192,11 @@ public class PaymentPanel extends JPanel {
     }
 
     private void filterTable(String searchText) {
-        SwingWorker<List<Payment>, Void> worker = new SwingWorker<List<Payment>, Void>() {
+        SwingWorker<List<Payment>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Payment> doInBackground() {
                 List<Payment> allPayments = paymentCRUD.getAllRecords();
+                if (searchText.isEmpty()) return allPayments;
                 return allPayments.stream()
                         .filter(p -> p.receiptNumber().toLowerCase().contains(searchText.toLowerCase()) ||
                                 String.valueOf(p.billID()).contains(searchText))

@@ -12,10 +12,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Meter Management Panel
- * Assigned to: LUIS, Kamillu Raphael C.
- */
 public class MeterPanel extends JPanel {
 
     private StyledTable meterTable;
@@ -67,7 +63,8 @@ public class MeterPanel extends JPanel {
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -99,11 +96,15 @@ public class MeterPanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(addButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(editButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
@@ -132,7 +133,8 @@ public class MeterPanel extends JPanel {
     }
 
     public void refreshData() {
-        SwingWorker<List<Meter>, Void> worker = new SwingWorker<List<Meter>, Void>() {
+        if(searchBar != null) searchBar.clearSearchText();
+        SwingWorker<List<Meter>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Meter> doInBackground() {
                 return meterCRUD.getAllRecords();
@@ -175,10 +177,11 @@ public class MeterPanel extends JPanel {
     }
 
     private void filterTable(String searchText) {
-        SwingWorker<List<Meter>, Void> worker = new SwingWorker<List<Meter>, Void>() {
+        SwingWorker<List<Meter>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Meter> doInBackground() {
                 List<Meter> allMeters = meterCRUD.getAllRecords();
+                if(searchText.isEmpty()) return allMeters;
                 return allMeters.stream()
                         .filter(m -> m.meterSerialNumber().toLowerCase().contains(searchText.toLowerCase()) ||
                                 m.meterStatus().toLowerCase().contains(searchText.toLowerCase()))

@@ -3,11 +3,13 @@ package Views.billing;
 import Views.components.*;
 import Model.Consumption;
 import Model.ConsumptionCRUD;
+import Model.Staff;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Consumption management panel
@@ -17,9 +19,12 @@ public class ConsumptionPanel extends JPanel {
     private StyledTable consumptionTable;
     private DefaultTableModel tableModel;
     private ConsumptionCRUD consumptionCRUD;
+    private Staff currentStaff;
+    private SearchBar searchBar;
 
-    public ConsumptionPanel() {
+    public ConsumptionPanel(Staff staff) {
         consumptionCRUD = new ConsumptionCRUD();
+        this.currentStaff = staff;
         setLayout(new BorderLayout());
         setBackground(ColorScheme.BACKGROUND);
         initComponents();
@@ -60,7 +65,8 @@ public class ConsumptionPanel extends JPanel {
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -68,14 +74,51 @@ public class ConsumptionPanel extends JPanel {
         ));
 
         StyledButton addButton = new StyledButton("Add Record", StyledButton.ButtonType.PRIMARY);
+        StyledButton editButton = new StyledButton("Edit", StyledButton.ButtonType.SECONDARY);
+        StyledButton deleteButton = new StyledButton("Delete", StyledButton.ButtonType.DANGER);
         StyledButton refreshButton = new StyledButton("Refresh", StyledButton.ButtonType.SECONDARY);
+        
+        searchBar = new SearchBar(250);
+        searchBar.setPlaceholder("Search by Meter ID...");
+        searchBar.setSearchListener(new SearchBar.SearchListener() {
+            @Override
+            public void onSearch(String searchText) {
+                filterTable(searchText);
+            }
 
+            @Override
+            public void onClear() {
+                refreshData();
+            }
+        });
+
+        addButton.addActionListener(e -> openAddConsumptionDialog());
+        editButton.addActionListener(e -> showEditDialog());
+        deleteButton.addActionListener(e -> deleteConsumption());
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(addButton);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(editButton);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(deleteButton);
+        panel.add(Box.createHorizontalGlue());
+        panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
+        panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
+    }
+    
+    private void openAddConsumptionDialog() {
+        // This dialog is likely for adding only, as it doesn't take a record to edit.
+        AddConsumptionDialog dialog = new AddConsumptionDialog((Frame) SwingUtilities.getWindowAncestor(this));
+        dialog.setVisible(true);
+        if (dialog.isRecordAdded()) {
+            refreshData(); 
+        }
     }
 
     private JPanel createTablePanel() {
@@ -93,6 +136,7 @@ public class ConsumptionPanel extends JPanel {
 
         consumptionTable = new StyledTable(tableModel);
         consumptionTable.setDateColumnRenderer(3);
+        consumptionTable.setCurrencyColumnRenderer(2); 
 
         JScrollPane scrollPane = new JScrollPane(consumptionTable);
         scrollPane.setBorder(null);
@@ -103,7 +147,11 @@ public class ConsumptionPanel extends JPanel {
     }
 
     public void refreshData() {
-        SwingWorker<List<Consumption>, Void> worker = new SwingWorker<List<Consumption>, Void>() {
+        if (searchBar != null) {
+            searchBar.clearSearchText();
+        }
+
+        SwingWorker<List<Consumption>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Consumption> doInBackground() {
                 return consumptionCRUD.getAllRecords();
@@ -122,20 +170,74 @@ public class ConsumptionPanel extends JPanel {
                 }
             }
         };
-
         worker.execute();
     }
 
     private void displayRecords(List<Consumption> records) {
         tableModel.setRowCount(0);
-
         for (Consumption record : records) {
             tableModel.addRow(new Object[]{
                     record.consumptionID(),
                     record.meterID(),
-                    String.format("%.2f", record.consumptionValue()),
+                    record.consumptionValue(), 
                     record.readingDate()
             });
+        }
+    }
+
+    private void filterTable(String searchText) {
+        SwingWorker<List<Consumption>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected List<Consumption> doInBackground() {
+                List<Consumption> allRecords = consumptionCRUD.getAllRecords();
+                if (searchText == null || searchText.trim().isEmpty()) {
+                    return allRecords;
+                }
+                String lowerCaseText = searchText.toLowerCase();
+                return allRecords.stream()
+                        .filter(c -> String.valueOf(c.meterID()).contains(lowerCaseText))
+                        .collect(Collectors.toList());
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    displayRecords(get());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker.execute();
+    }
+
+    private void showEditDialog() {
+        // Since there's no edit dialog, inform the user.
+        JOptionPane.showMessageDialog(this, "Editing consumption records is not yet implemented.", "Information", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void deleteConsumption() {
+        int selectedRow = consumptionTable.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a consumption record to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int consumptionID = (int) tableModel.getValueAt(selectedRow, 0);
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete consumption record ID: " + consumptionID + "?\nThis could affect existing bills.",
+                "Confirm Deletion",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = consumptionCRUD.deleteRecord(consumptionID);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Consumption record deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                refreshData();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to delete record. It may be associated with a bill.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

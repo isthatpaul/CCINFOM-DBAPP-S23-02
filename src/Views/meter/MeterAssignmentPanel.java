@@ -3,17 +3,12 @@ package Views.meter;
 import Views.components.*;
 import Model.*;
 import Services.MeterAssignmentService;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Meter Assignment Panel
- * Assigned to: LUIS, Kamillu Raphael C.
- */
 public class MeterAssignmentPanel extends JPanel {
 
     private StyledTable assignmentTable;
@@ -24,8 +19,10 @@ public class MeterAssignmentPanel extends JPanel {
     private MeterAssignmentService assignmentService;
     private SearchBar searchBar;
     private JComboBox<String> statusFilter;
+    private Staff currentStaff;
 
-    public MeterAssignmentPanel() {
+    public MeterAssignmentPanel(Staff staff) {
+        this.currentStaff = staff;
         assignmentCRUD = new MeterAssignmentCRUD();
         customerCRUD = new CustomerCRUD();
         meterCRUD = new MeterCRUD();
@@ -52,10 +49,9 @@ public class MeterAssignmentPanel extends JPanel {
         centerPanel.add(tablePanel, BorderLayout.CENTER);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
-
         add(mainPanel);
     }
-
+    
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(ColorScheme.BACKGROUND);
@@ -65,12 +61,12 @@ public class MeterAssignmentPanel extends JPanel {
         titleLabel.setForeground(ColorScheme.TEXT_PRIMARY);
 
         panel.add(titleLabel, BorderLayout.WEST);
-
         return panel;
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -105,18 +101,23 @@ public class MeterAssignmentPanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(assignButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(updateButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Status:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(statusFilter);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
-
         return panel;
     }
-
+    
     private JPanel createTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
@@ -141,9 +142,12 @@ public class MeterAssignmentPanel extends JPanel {
 
         return panel;
     }
-
+    
     public void refreshData() {
-        SwingWorker<List<MeterAssignment>, Void> worker = new SwingWorker<List<MeterAssignment>, Void>() {
+        statusFilter.setSelectedIndex(0); 
+        if(searchBar != null) searchBar.clearSearchText(); 
+        
+        SwingWorker<List<MeterAssignment>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<MeterAssignment> doInBackground() {
                 return assignmentCRUD.getAllRecords();
@@ -155,63 +159,55 @@ public class MeterAssignmentPanel extends JPanel {
                     List<MeterAssignment> assignments = get();
                     displayAssignments(assignments);
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(MeterAssignmentPanel.this,
-                            "Error loading assignments: " + e.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
                 }
             }
         };
-
         worker.execute();
     }
-
+    
     private void displayAssignments(List<MeterAssignment> assignments) {
         tableModel.setRowCount(0);
-
         for (MeterAssignment assignment : assignments) {
-            String customerName = getCustomerName(assignment.customerID());
-            String meterSerial = getMeterSerial(assignment.meterID());
-
             tableModel.addRow(new Object[]{
                     assignment.assignmentID(),
-                    customerName,
-                    meterSerial,
+                    getCustomerName(assignment.customerID()),
+                    getMeterSerial(assignment.meterID()),
                     assignment.assignmentDate(),
                     assignment.installationDate(),
                     assignment.status()
             });
         }
     }
-
+    
     private String getCustomerName(int customerID) {
         Customer customer = customerCRUD.getRecordById(customerID);
-        if (customer != null) {
-            return customer.firstName() + " " + customer.lastName() + " (ID: " + customerID + ")";
-        }
-        return "Unknown";
+        return (customer != null) ? customer.firstName() + " " + customer.lastName() : "Unknown";
     }
 
     private String getMeterSerial(int meterID) {
         Meter meter = meterCRUD.getRecordById(meterID);
-        return meter != null ? meter.meterSerialNumber() : "Unknown";
+        return (meter != null) ? meter.meterSerialNumber() : "Unknown";
     }
-
+    
     private void applyFilter() {
         String selectedStatus = (String) statusFilter.getSelectedItem();
-        String searchText = searchBar.getSearchText();
+        String searchText = searchBar.getSearchText().toLowerCase();
 
-        SwingWorker<List<MeterAssignment>, Void> worker = new SwingWorker<List<MeterAssignment>, Void>() {
+        SwingWorker<List<MeterAssignment>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<MeterAssignment> doInBackground() {
                 List<MeterAssignment> allAssignments = assignmentCRUD.getAllRecords();
 
                 return allAssignments.stream()
                         .filter(assignment -> {
-                            boolean statusMatch = "All".equals(selectedStatus) || assignment.status().equals(selectedStatus);
+                            boolean statusMatch = "All".equals(selectedStatus) || assignment.status().equalsIgnoreCase(selectedStatus);
+                            
                             boolean searchMatch = searchText.isEmpty() ||
-                                    String.valueOf(assignment.customerID()).contains(searchText) ||
-                                    String.valueOf(assignment.meterID()).contains(searchText);
+                                    getCustomerName(assignment.customerID()).toLowerCase().contains(searchText) ||
+                                    getMeterSerial(assignment.meterID()).toLowerCase().contains(searchText) ||
+                                    String.valueOf(assignment.assignmentID()).contains(searchText);
+                            
                             return statusMatch && searchMatch;
                         })
                         .collect(Collectors.toList());
@@ -220,21 +216,20 @@ public class MeterAssignmentPanel extends JPanel {
             @Override
             protected void done() {
                 try {
-                    List<MeterAssignment> filtered = get();
-                    displayAssignments(filtered);
+                    displayAssignments(get());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
-
         worker.execute();
     }
-
+    
     private void showAssignMeterDialog() {
         MeterAssignmentFormDialog dialog = new MeterAssignmentFormDialog(
                 (Frame) SwingUtilities.getWindowAncestor(this),
-                null
+                null,
+                currentStaff
         );
         dialog.setVisible(true);
 
@@ -246,10 +241,7 @@ public class MeterAssignmentPanel extends JPanel {
     private void showUpdateDialog() {
         int selectedRow = assignmentTable.getSelectedRow();
         if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select an assignment to update.",
-                    "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an assignment to update.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -259,7 +251,8 @@ public class MeterAssignmentPanel extends JPanel {
         if (assignment != null) {
             MeterAssignmentFormDialog dialog = new MeterAssignmentFormDialog(
                     (Frame) SwingUtilities.getWindowAncestor(this),
-                    assignment
+                    assignment,
+                    currentStaff
             );
             dialog.setVisible(true);
 
@@ -268,14 +261,11 @@ public class MeterAssignmentPanel extends JPanel {
             }
         }
     }
-
+    
     private void removeAssignment() {
         int selectedRow = assignmentTable.getSelectedRow();
         if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Please select an assignment to remove.",
-                    "No Selection",
-                    JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an assignment to remove.", "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -290,16 +280,10 @@ public class MeterAssignmentPanel extends JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             boolean success = assignmentService.deleteAssignment(assignmentID);
             if (success) {
-                JOptionPane.showMessageDialog(this,
-                        "Assignment removed successfully!",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Assignment removed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshData();
             } else {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to remove assignment.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to remove assignment.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

@@ -7,7 +7,7 @@ public record Payment(
         int billID, // FK to Bill
         Date paymentDate,
         Double amountPaid,
-        String paymentMethod,// e.g., 'CASH', 'ONLINE', 'E-WALLET'
+        String paymentMethod,
         String receiptNumber,
         int processedByStaffID,
         int collectorID,

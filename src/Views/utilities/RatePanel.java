@@ -9,10 +9,6 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Rate Management Panel
- * Assigned to: ATACADOR, Juan Lorenzo N.
- */
 public class RatePanel extends JPanel {
 
     private StyledTable rateTable;
@@ -65,7 +61,8 @@ public class RatePanel extends JPanel {
     }
 
     private JPanel createToolbarPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         panel.setBackground(Color.WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(ColorScheme.BORDER, 1),
@@ -102,13 +99,19 @@ public class RatePanel extends JPanel {
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(addButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(editButton);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
-        panel.add(Box.createHorizontalStrut(20));
+        panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Filter:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(utilityTypeFilter);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(new JLabel("Search:"));
+        panel.add(Box.createHorizontalStrut(5));
         panel.add(searchBar);
+        panel.add(Box.createHorizontalStrut(10));
         panel.add(refreshButton);
 
         return panel;
@@ -149,7 +152,10 @@ public class RatePanel extends JPanel {
     }
 
     public void refreshData() {
-        SwingWorker<List<Rate>, Void> worker = new SwingWorker<List<Rate>, Void>() {
+        if(searchBar != null) searchBar.clearSearchText();
+        if(utilityTypeFilter != null) utilityTypeFilter.setSelectedIndex(0);
+
+        SwingWorker<List<Rate>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Rate> doInBackground() {
                 return rateCRUD.getAllRecords();
@@ -199,20 +205,18 @@ public class RatePanel extends JPanel {
         UtilityTypeFilterItem selectedFilter = (UtilityTypeFilterItem) utilityTypeFilter.getSelectedItem();
         String searchText = searchBar.getSearchText();
 
-        SwingWorker<List<Rate>, Void> worker = new SwingWorker<List<Rate>, Void>() {
+        SwingWorker<List<Rate>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<Rate> doInBackground() {
                 List<Rate> allRates = rateCRUD.getAllRecords();
 
                 return allRates.stream()
                         .filter(rate -> {
-                            // Utility type filter
                             boolean typeMatch = selectedFilter == null || 
                                               selectedFilter.getId() == null ||
                                               (rate.utilityTypeID() != null && 
                                                rate.utilityTypeID().equals(selectedFilter.getId()));
 
-                            // Search filter
                             boolean searchMatch = searchText.isEmpty() ||
                                     String.valueOf(rate.ratePerUnit()).contains(searchText);
 
@@ -310,7 +314,6 @@ public class RatePanel extends JPanel {
         }
     }
 
-    // Helper class
     private static class UtilityTypeFilterItem {
         private Integer id;
         private String name;

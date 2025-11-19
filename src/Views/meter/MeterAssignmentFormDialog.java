@@ -3,7 +3,6 @@ package Views.meter;
 import Views.components.*;
 import Model.*;
 import Services.MeterAssignmentService;
-
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Date;
@@ -27,11 +26,14 @@ public class MeterAssignmentFormDialog extends JDialog {
     private MeterAssignmentService assignmentService;
     private CustomerCRUD customerCRUD;
     private MeterCRUD meterCRUD;
+    private Staff currentStaff; // Added to get the logged-in staff member
     private boolean saved = false;
 
-    public MeterAssignmentFormDialog(Frame parent, MeterAssignment assignment) {
+    // Constructor updated to accept the Staff object
+    public MeterAssignmentFormDialog(Frame parent, MeterAssignment assignment, Staff staff) {
         super(parent, assignment == null ? "Assign Meter" : "Update Assignment", true);
         this.assignment = assignment;
+        this.currentStaff = staff; // Store the staff object
         this.assignmentService = new MeterAssignmentService();
         this.customerCRUD = new CustomerCRUD();
         this.meterCRUD = new MeterCRUD();
@@ -41,6 +43,7 @@ public class MeterAssignmentFormDialog extends JDialog {
         }
     }
 
+    // ... (initComponents and other UI methods remain unchanged)
     private void initComponents() {
         setSize(600, 600);
         setLocationRelativeTo(getParent());
@@ -161,7 +164,7 @@ public class MeterAssignmentFormDialog extends JDialog {
         // Initialize meter info
         updateMeterInfo();
     }
-
+    
     private JLabel createLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -188,7 +191,7 @@ public class MeterAssignmentFormDialog extends JDialog {
             }
         }
     }
-
+    
     private void updateMeterInfo() {
         MeterItem selectedMeter = (MeterItem) meterCombo.getSelectedItem();
         if (selectedMeter != null) {
@@ -236,90 +239,47 @@ public class MeterAssignmentFormDialog extends JDialog {
     }
 
     private void saveAssignment() {
-        // Validation
-        if (customerCombo.getSelectedItem() == null) {
-            showError("Please select a customer.");
-            return;
-        }
-        if (meterCombo.getSelectedItem() == null) {
-            showError("Please select a meter.");
+        if (customerCombo.getSelectedItem() == null || meterCombo.getSelectedItem() == null) {
+            showError("Please select a customer and a meter.");
             return;
         }
 
         CustomerItem selectedCustomer = (CustomerItem) customerCombo.getSelectedItem();
         MeterItem selectedMeter = (MeterItem) meterCombo.getSelectedItem();
 
-        // Validate customer eligibility
-        Customer customer = customerCRUD.getRecordById(selectedCustomer.getId());
-        if (customer == null || !"ACTIVE".equals(customer.billingStatus())) {
-            showError("Customer must have ACTIVE billing status to be assigned a meter.");
-            return;
-        }
-
-        // Validate meter availability (only for new assignments)
-        if (assignment == null) {
-            Meter meter = meterCRUD.getRecordById(selectedMeter.getId());
-            if (meter == null || !"AVAILABLE".equals(meter.meterStatus())) {
-                showError("Meter must be AVAILABLE for assignment.");
-                return;
-            }
-        }
-
-        // Get staff ID (for now, use a placeholder or get from session)
-        int assignedByStaffID = 1; 
-
-        int assignmentID = (assignment != null) ? assignment.assignmentID() : 0;
-        Date lastUpdated = new Date(System.currentTimeMillis());
+        // FIX: Get the Staff ID from the currently logged-in user
+        int assignedByStaffID = currentStaff.staffID(); 
 
         MeterAssignment newAssignment = new MeterAssignment(
-                assignmentID,
+                (assignment != null) ? assignment.assignmentID() : 0,
                 selectedCustomer.getId(),
                 selectedMeter.getId(),
                 assignmentDatePicker.getSqlDate(),
                 installationDatePicker.getSqlDate(),
                 assignedByStaffID,
                 (String) statusCombo.getSelectedItem(),
-                lastUpdated
+                new Date(System.currentTimeMillis()) // lastUpdated
         );
 
         boolean success;
+        // Use the service to handle the database logic
         if (assignment == null) {
             success = assignmentService.assignMeter(newAssignment);
-            
-            // Update meter status to ASSIGNED
-            if (success) {
-                Meter meter = meterCRUD.getRecordById(selectedMeter.getId());
-                if (meter != null) {
-                    Meter updatedMeter = new Meter(
-                            meter.meterID(),
-                            meter.utilityTypeID(),
-                            meter.meterSerialNumber(),
-                            "ASSIGNED"
-                    );
-                    meterCRUD.updateRecord(updatedMeter);
-                }
-            }
         } else {
             success = assignmentService.updateAssignment(newAssignment);
         }
 
         if (success) {
             saved = true;
-            JOptionPane.showMessageDialog(this,
-                    "Meter assignment saved successfully!",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Meter assignment saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
-            showError("Failed to save meter assignment.");
+            showError("Failed to save meter assignment. The meter may already be assigned.");
         }
     }
 
     private void showError(String message) {
-        JOptionPane.showMessageDialog(this,
-                message,
-                "Validation Error",
-                JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "Validation Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public boolean isSaved() {
@@ -328,41 +288,17 @@ public class MeterAssignmentFormDialog extends JDialog {
 
     // Helper classes
     private static class CustomerItem {
-        private Customer customer;
-
-        public CustomerItem(Customer customer) {
-            this.customer = customer;
-        }
-
-        public int getId() {
-            return customer.customerID();
-        }
-
-        @Override
-        public String toString() {
-            return customer.firstName() + " " + customer.lastName() + 
-                   " (Account: " + customer.accountNumber() + ")";
-        }
+        private final Customer customer;
+        public CustomerItem(Customer customer) { this.customer = customer; }
+        public int getId() { return customer.customerID(); }
+        @Override public String toString() { return customer.firstName() + " " + customer.lastName() + " (Account: " + customer.accountNumber() + ")"; }
     }
 
     private static class MeterItem {
-        private Meter meter;
-
-        public MeterItem(Meter meter) {
-            this.meter = meter;
-        }
-
-        public int getId() {
-            return meter.meterID();
-        }
-
-        public Meter getMeter() {
-            return meter;
-        }
-
-        @Override
-        public String toString() {
-            return "Serial: " + meter.meterSerialNumber() + " (ID: " + meter.meterID() + ")";
-        }
+        private final Meter meter;
+        public MeterItem(Meter meter) { this.meter = meter; }
+        public int getId() { return meter.meterID(); }
+        public Meter getMeter() { return meter; }
+        @Override public String toString() { return "Serial: " + meter.meterSerialNumber() + " (ID: " + meter.meterID() + ")"; }
     }
 }
