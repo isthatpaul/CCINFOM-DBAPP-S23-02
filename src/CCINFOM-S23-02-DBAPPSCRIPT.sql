@@ -86,6 +86,17 @@ CREATE TABLE Customer (
 );
 
 -- ================================
+-- Meter
+-- ================================
+CREATE TABLE Meter (
+	MeterID INT PRIMARY KEY,
+	UtilityTypeID INT,
+	MeterSerialNumber VARCHAR(100) NOT NULL UNIQUE,
+	MeterStatus VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+	FOREIGN KEY (UtilityTypeID) REFERENCES UtilityType(UtilityTypeID)
+);
+
+-- ================================
 -- MeterAssignment
 -- ================================
 CREATE TABLE MeterAssignment (
@@ -98,7 +109,9 @@ CREATE TABLE MeterAssignment (
     Status VARCHAR(20) NOT NULL,
     LastUpdated DATE,
     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
-    FOREIGN KEY (AssignedByStaffID) REFERENCES Staff(StaffID)
+    FOREIGN KEY (AssignedByStaffID) REFERENCES Staff(StaffID),
+    -- COPILOT: Added missing foreign key to the Meter table
+    FOREIGN KEY (MeterID) REFERENCES Meter(MeterID)
 );
 
 -- ================================
@@ -108,7 +121,8 @@ CREATE TABLE Consumption (
     ConsumptionID INT PRIMARY KEY,
     ReadingDate DATE NOT NULL,
     ConsumptionValue DECIMAL(10,2) NOT NULL,
-    MeterID INT NOT NULL
+    MeterID INT NOT NULL,
+    FOREIGN KEY (MeterID) REFERENCES Meter(MeterID)
 );
 
 -- ================================
@@ -162,17 +176,6 @@ CREATE TABLE OverdueNotice (
     SentByStaffID INT NOT NULL,
     FOREIGN KEY (BillID) REFERENCES Bill(BillID),
     FOREIGN KEY (SentByStaffID) REFERENCES Staff(StaffID)
-);
-
--- ================================
--- Meter
--- ================================
-CREATE TABLE Meter (
-	MeterID INT PRIMARY KEY,
-	UtilityTypeID INT,
-	MeterSerialNumber VARCHAR(100) NOT NULL UNIQUE,
-	MeterStatus VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
-	FOREIGN KEY (UtilityTypeID) REFERENCES UtilityType(UtilityTypeID)
 );
 
 SET FOREIGN_KEY_CHECKS = 1;
