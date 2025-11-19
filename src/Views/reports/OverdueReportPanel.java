@@ -58,7 +58,7 @@ public class OverdueReportPanel extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(ColorScheme.BACKGROUND);
-        JLabel titleLabel = new JLabel("⚠️ Outstanding/Overdue Accounts Report");
+        JLabel titleLabel = new JLabel("Outstanding/Overdue Accounts Report");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(ColorScheme.TEXT_PRIMARY);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

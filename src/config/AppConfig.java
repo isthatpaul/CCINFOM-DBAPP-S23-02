@@ -33,7 +33,6 @@ public class AppConfig {
 
     // Business Rules
     public static final int DEFAULT_BILL_DUE_DAYS = 21;
-    public static final double OVERDUE_PENALTY_RATE = 0.02; // 2% per month
     public static final double MIN_PAYMENT_AMOUNT = 1.00;
     public static final int MAX_PARTIAL_PAYMENTS = 10;
 

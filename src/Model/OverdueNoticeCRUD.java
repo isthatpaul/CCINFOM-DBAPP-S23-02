@@ -10,19 +10,22 @@ public class OverdueNoticeCRUD
 {
     // CREATE
     public boolean addRecord(OverdueNotice notice) {
-        String sql = "INSERT INTO OverdueNotice (BillID, OverdueDate, PenaltyAmount, NoticeDate, EscalationStatus, SentByStaffID) VALUES (?, ?, ?, ?, ?, ?)";
+        // The INSERT statement now includes NoticeID, as it's not auto-incremented in the schema.
+        String sql = "INSERT INTO OverdueNotice (NoticeID, BillID, OverdueDate, PenaltyAmount, NoticeDate, EscalationStatus, SentByStaffID) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, notice.billID());
-            ps.setDate(2, notice.overdueDate());
-            ps.setDouble(3, notice.penaltyAmount());
-            ps.setDate(4, notice.noticeDate());
-            ps.setString(5, notice.escalationStatus());
-            ps.setInt(6, notice.sentByStaffID());
+            ps.setInt(1, notice.noticeID()); // The fix is here
+            ps.setInt(2, notice.billID());
+            ps.setDate(3, notice.overdueDate());
+            ps.setDouble(4, notice.penaltyAmount());
+            ps.setDate(5, notice.noticeDate());
+            ps.setString(6, notice.escalationStatus());
+            ps.setInt(7, notice.sentByStaffID());
             ps.executeUpdate();
             return true;
         } catch (SQLException e) {
+            // This is the error you were seeing. Printing it helps debugging.
             System.err.println("OverdueNotice addRecord error: " + e.getMessage());
             return false;
         }
@@ -78,6 +81,60 @@ public class OverdueNoticeCRUD
             System.err.println("OverdueNotice getRecordById error: " + e.getMessage());
         }
         return null;
+    }
+
+    public boolean hasOverdueNotice(int billId) {
+        String sql = "SELECT COUNT(*) FROM OverdueNotice WHERE BillID = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, billId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("OverdueNotice hasOverdueNotice error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public OverdueNotice getLatestNoticeForBill(int billId) {
+        String sql = "SELECT * FROM OverdueNotice WHERE BillID = ? ORDER BY NoticeID DESC LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, billId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new OverdueNotice(
+                            rs.getInt("NoticeID"),
+                            rs.getInt("BillID"),
+                            rs.getDate("OverdueDate"),
+                            rs.getDouble("PenaltyAmount"),
+                            rs.getDate("NoticeDate"),
+                            rs.getString("EscalationStatus"),
+                            rs.getInt("SentByStaffID")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("OverdueNotice getLatestNoticeForBill error: " + e.getMessage());
+        }
+        return null;
+    }
+    
+    public int getNextNoticeID() {
+        String sql = "SELECT MAX(NoticeID) FROM OverdueNotice";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1) + 1;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 1; // Default if table is empty
     }
 
     // UPDATE

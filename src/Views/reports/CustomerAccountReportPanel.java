@@ -59,7 +59,7 @@ public class CustomerAccountReportPanel extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(ColorScheme.BACKGROUND);
-        JLabel titleLabel = new JLabel("📋 Customer Account Report");
+        JLabel titleLabel = new JLabel("Customer Account Report");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(ColorScheme.TEXT_PRIMARY);
         titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -3,7 +3,6 @@ package Views.billing;
 import Views.components.*;
 import Model.*;
 import Services.BillService;
-import config.AppConfig;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -20,6 +19,8 @@ public class BillPanel extends JPanel {
     private SearchBar searchBar;
     private JComboBox<String> statusFilter;
     private BillService billService;
+    private StyledButton applyPenaltyButton;
+    private StyledButton applyAllPenaltiesButton;
 
     public BillPanel(Staff staff) {
         this.currentStaff = staff;
@@ -29,6 +30,9 @@ public class BillPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(ColorScheme.BACKGROUND);
         initComponents();
+        // Add a listener to enable/disable the button based on selection
+        billTable.getSelectionModel().addListSelectionListener(e -> updateButtonState());
+        updateButtonState(); // Set initial state
     }
     
     private void initComponents() {
@@ -74,7 +78,8 @@ public class BillPanel extends JPanel {
         StyledButton generateButton = new StyledButton("Generate Bill", StyledButton.ButtonType.PRIMARY);
         StyledButton viewButton = new StyledButton("View Details", StyledButton.ButtonType.SECONDARY);
         StyledButton deleteButton = new StyledButton("Delete", StyledButton.ButtonType.DANGER);
-        StyledButton applyPenaltiesButton = new StyledButton("Apply Penalties", StyledButton.ButtonType.WARNING);
+        applyPenaltyButton = new StyledButton("Apply Penalty", StyledButton.ButtonType.WARNING);
+        applyAllPenaltiesButton = new StyledButton("Apply All Penalties", StyledButton.ButtonType.WARNING);
         StyledButton refreshButton = new StyledButton("Refresh", StyledButton.ButtonType.SECONDARY);
 
         statusFilter = new JComboBox<>(new String[]{"All", "UNPAID", "PAID", "OVERDUE", "PARTIALLY_PAID"});
@@ -97,7 +102,8 @@ public class BillPanel extends JPanel {
         generateButton.addActionListener(e -> showGenerateBillDialog());
         viewButton.addActionListener(e -> viewBillDetails());
         deleteButton.addActionListener(e -> deleteBill());
-        applyPenaltiesButton.addActionListener(e -> applyOverduePenalties());
+        applyPenaltyButton.addActionListener(e -> applySinglePenalty());
+        applyAllPenaltiesButton.addActionListener(e -> applyAllOverduePenalties());
         refreshButton.addActionListener(e -> refreshData());
 
         panel.add(generateButton);
@@ -106,7 +112,9 @@ public class BillPanel extends JPanel {
         panel.add(Box.createHorizontalStrut(10));
         panel.add(deleteButton);
         panel.add(Box.createHorizontalStrut(10));
-        panel.add(applyPenaltiesButton);
+        panel.add(applyPenaltyButton);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(applyAllPenaltiesButton);
         panel.add(Box.createHorizontalGlue());
         panel.add(new JLabel("Status:"));
         panel.add(Box.createHorizontalStrut(5));
@@ -144,6 +152,19 @@ public class BillPanel extends JPanel {
         return panel;
     }
     
+    private void updateButtonState() {
+        int selectedRow = billTable.getSelectedRow();
+        if (selectedRow < 0) {
+            applyPenaltyButton.setEnabled(false);
+            return;
+        }
+        
+        String status = (String) tableModel.getValueAt(billTable.convertRowIndexToModel(selectedRow), 4);
+        // Enable the button only if the status is eligible for a first-time penalty.
+        boolean isEligible = "UNPAID".equalsIgnoreCase(status) || "PARTIALLY_PAID".equalsIgnoreCase(status);
+        applyPenaltyButton.setEnabled(isEligible);
+    }
+    
     public void refreshData() {
         statusFilter.setSelectedIndex(0);
         searchBar.clearSearchText(); 
@@ -176,6 +197,7 @@ public class BillPanel extends JPanel {
                     "Staff ID: " + bill.generatedByStaffID()
             });
         }
+        updateButtonState(); // Refresh button state after loading data
     }
     
     private String getCustomerName(int customerID) {
@@ -292,13 +314,77 @@ public class BillPanel extends JPanel {
             }
         }
     }
+
+    private void applySinglePenalty() {
+        int selectedRow = billTable.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a bill to apply a penalty.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int billID = (int) tableModel.getValueAt(billTable.convertRowIndexToModel(selectedRow), 0);
+        Bill bill = billCRUD.getRecordById(billID);
+
+        if (bill == null) {
+            JOptionPane.showMessageDialog(this, "Could not find the selected bill.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // --- Logic synchronized with BillService ---
+        // 1. Check if the bill status is eligible for a first-time penalty.
+        String status = bill.status();
+        if (!("UNPAID".equalsIgnoreCase(status) || "PARTIALLY_PAID".equalsIgnoreCase(status))) {
+            JOptionPane.showMessageDialog(this, "Penalties can only be applied to bills with 'UNPAID' or 'PARTIALLY_PAID' status.", "Invalid Status", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 2. Check if the bill is actually past its due date.
+        java.util.Date currentDate = new java.util.Date();
+        if (bill.dueDate().after(currentDate)) {
+            JOptionPane.showMessageDialog(this, "Cannot apply penalty. The bill is not yet past its due date.", "Not Overdue", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // --- End of synchronized logic ---
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Apply penalty to Bill ID: " + billID + "?",
+                "Confirm Penalty",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                // This service call now acts as the final, authoritative check.
+                return billService.applyPenaltyToBill(billID, currentStaff.staffID());
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (get()) {
+                        JOptionPane.showMessageDialog(BillPanel.this, "Penalty applied successfully to Bill ID: " + billID, "Success", JOptionPane.INFORMATION_MESSAGE);
+                        refreshData();
+                    } else {
+                        JOptionPane.showMessageDialog(BillPanel.this, "Failed to apply penalty. The bill may no longer be eligible, or a penalty has already been applied.", "Action Failed", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(BillPanel.this, "An error occurred while applying the penalty: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        worker.execute();
+    }
     
-    private void applyOverduePenalties() {
+    private void applyAllOverduePenalties() {
         int confirm = JOptionPane.showConfirmDialog(this,
                 "This will apply penalties to all applicable overdue bills.\n" +
-                "Penalty Rate: " + (AppConfig.OVERDUE_PENALTY_RATE * 100) + "% of amount due\n\n" +
+                "(Status is UNPAID/PARTIALLY_PAID and Due Date is past)\n\n" +
                 "Continue?",
-                "Apply Penalties",
+                "Apply All Penalties",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
 
@@ -320,7 +406,7 @@ public class BillPanel extends JPanel {
                         JOptionPane.showMessageDialog(BillPanel.this, "Penalties applied successfully to " + count + " bill(s).", "Success", JOptionPane.INFORMATION_MESSAGE);
                         refreshData();
                     } else {
-                        JOptionPane.showMessageDialog(BillPanel.this, "No overdue bills were found that required a penalty.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(BillPanel.this, "No new overdue bills were found that required a penalty.", "Information", JOptionPane.INFORMATION_MESSAGE);
                     }
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(BillPanel.this, "An error occurred while applying penalties: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

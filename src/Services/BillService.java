@@ -1,7 +1,6 @@
 package Services;
 
 import Model.*;
-import config.AppConfig; // Import the configuration file
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -13,6 +12,8 @@ public class BillService {
     private final RateCRUD rateCRUD = new RateCRUD();
     private final CustomerCRUD customerCRUD = new CustomerCRUD();
     private final OverdueNoticeCRUD overdueNoticeCRUD = new OverdueNoticeCRUD();
+    
+    private static final double OVERDUE_PENALTY_RATE = 0.05; // 5%
 
     public Bill generateBillFromConsumption(Consumption consumption, int staffId) throws BillingException {
         Meter meter = meterCRUD.getRecordById(consumption.meterID());
@@ -34,8 +35,7 @@ public class BillService {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(consumption.readingDate());
-        // FIX: Use the value from AppConfig instead of a hardcoded number.
-        cal.add(Calendar.DAY_OF_MONTH, AppConfig.DEFAULT_BILL_DUE_DAYS);
+        cal.add(Calendar.DAY_OF_MONTH, 20); // Example: 20 days to pay
         Date dueDate = new Date(cal.getTimeInMillis());
 
         int technicianID = staffId; 
@@ -82,52 +82,86 @@ public class BillService {
 
         return billCRUD.updateRecord(updatedBill);
     }
-
+    
     public int applyPenaltiesToOverdueBills(int staffId) {
-        int penaltiesApplied = 0;
-        List<Bill> allBills = billCRUD.getAllRecords();
-        java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
-
-        for (Bill bill : allBills) {
-            if (("UNPAID".equals(bill.status()) || "PARTIALLY_PAID".equals(bill.status())) 
-                && bill.dueDate().before(currentDate)) {
-                
-                double penaltyAmount = bill.amountDue() * AppConfig.OVERDUE_PENALTY_RATE;
-                
-                OverdueNotice notice = new OverdueNotice(
-                        0,
-                        bill.billID(),
-                        currentDate,
-                        penaltyAmount,
-                        currentDate,
-                        "PENDING",
-                        staffId
-                );
-                
-                boolean noticeCreated = overdueNoticeCRUD.addRecord(notice);
-                
-                if (noticeCreated) {
-                    double newAmountDue = bill.amountDue() + penaltyAmount;
-                    
-                    Bill updatedBill = new Bill(
-                            bill.billID(),
-                            bill.customerID(),
-                            bill.consumptionID(),
-                            bill.rateID(),
-                            newAmountDue,
-                            bill.dueDate(),
-                            "OVERDUE",
-                            bill.generatedByStaffID(),
-                            bill.technicianID()
-                    );
-                    
-                    if (billCRUD.updateRecord(updatedBill)) {
-                        penaltiesApplied++;
-                    }
+        int penaltiesAppliedCount = 0;
+        List<Bill> overdueBills = billCRUD.getBillsEligibleForPenalty(new Date(System.currentTimeMillis()));
+        
+        for (Bill bill : overdueBills) {
+            try {
+                if (applyPenaltyToBill(bill.billID(), staffId)) {
+                    penaltiesAppliedCount++;
                 }
+            } catch (BillingException e) {
+                System.err.println("Could not apply penalty to bill ID " + bill.billID() + ": " + e.getMessage());
             }
         }
-        return penaltiesApplied;
+        return penaltiesAppliedCount;
+    }
+
+    public boolean applyPenaltyToBill(int billId, int staffId) throws BillingException {
+        Bill bill = billCRUD.getRecordById(billId);
+        if (bill == null) {
+            throw new BillingException("Bill with ID " + billId + " not found.");
+        }
+
+        if (!isBillEligibleForPenalty(bill)) {
+             return false;
+        }
+
+        if (overdueNoticeCRUD.hasOverdueNotice(bill.billID())) {
+            return false;
+        }
+
+        double penaltyAmount = bill.amountDue() * OVERDUE_PENALTY_RATE;
+        Date currentDate = new Date(System.currentTimeMillis());
+
+        // The fix is here: get the next available NoticeID before creating the object.
+        int nextNoticeID = overdueNoticeCRUD.getNextNoticeID();
+
+        OverdueNotice notice = new OverdueNotice(
+                nextNoticeID, // Use the generated ID
+                bill.billID(),
+                currentDate,
+                penaltyAmount,
+                currentDate,
+                "First Notice",
+                staffId
+        );
+
+        if (!overdueNoticeCRUD.addRecord(notice)) {
+            throw new BillingException("Failed to create an overdue notice for Bill ID: " + bill.billID());
+        }
+
+        double newAmountDue = bill.amountDue() + penaltyAmount;
+        Bill updatedBill = new Bill(
+                bill.billID(),
+                bill.customerID(),
+                bill.consumptionID(),
+                bill.rateID(),
+                newAmountDue,
+                bill.dueDate(),
+                "OVERDUE",
+                bill.generatedByStaffID(),
+                bill.technicianID()
+        );
+
+        if (!billCRUD.updateRecord(updatedBill)) {
+            overdueNoticeCRUD.deleteRecord(notice.noticeID());
+            throw new BillingException("Failed to update bill with penalty. Overdue notice creation was rolled back.");
+        }
+
+        return true;
+    }
+
+    private boolean isBillEligibleForPenalty(Bill bill) {
+        Date currentDate = new Date(System.currentTimeMillis());
+        String status = bill.status();
+        
+        boolean isStatusEligible = "UNPAID".equalsIgnoreCase(status) || "PARTIALLY_PAID".equalsIgnoreCase(status);
+        boolean isPastDueDate = bill.dueDate().before(currentDate);
+        
+        return isStatusEligible && isPastDueDate;
     }
 
     public static class BillingException extends Exception {

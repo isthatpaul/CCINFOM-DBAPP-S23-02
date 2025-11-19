@@ -21,7 +21,6 @@ public class BillCRUD
             ps.setDate(5, bill.dueDate());
             ps.setString(6, bill.status());
             ps.setInt(7, bill.generatedByStaffID());
-            // TechnicianID is optional: use 0 as sentinel -> store NULL
             if (bill.technicianID() == 0) {
                 ps.setNull(8, Types.INTEGER);
             } else {
@@ -44,7 +43,6 @@ public class BillCRUD
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                // Read NULL as 0 sentinel for technicianID
                 int technician = (rs.getObject("TechnicianID") != null) ? rs.getInt("TechnicianID") : 0;
                 Bill b = new Bill(
                         rs.getInt("BillID"),
@@ -94,7 +92,6 @@ public class BillCRUD
         return null;
     }
 
-    // Add this method to your BillCRUD.java
     public Bill getLatestBillForConsumption(int consumptionId) {
         String sql = "SELECT * FROM Bill WHERE ConsumptionID = ? ORDER BY BillID DESC LIMIT 1";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -102,6 +99,7 @@ public class BillCRUD
             ps.setInt(1, consumptionId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    int technician = (rs.getObject("TechnicianID") != null) ? rs.getInt("TechnicianID") : 0;
                     return new Bill(
                             rs.getInt("BillID"),
                             rs.getInt("CustomerID"),
@@ -111,7 +109,7 @@ public class BillCRUD
                             rs.getDate("DueDate"),
                             rs.getString("Status"),
                             rs.getInt("GeneratedByStaffID"),
-                            rs.getInt("TechnicianID")
+                            technician
                     );
                 }
             }
@@ -121,8 +119,6 @@ public class BillCRUD
         return null;
     }
 
-    // Add this method to your existing BillCRUD.java file
-
     public List<Bill> getBillsByCustomerId(int customerId) {
         List<Bill> bills = new ArrayList<>();
         String sql = "SELECT * FROM Bill WHERE CustomerID = ?";
@@ -131,6 +127,7 @@ public class BillCRUD
             ps.setInt(1, customerId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    int technician = (rs.getObject("TechnicianID") != null) ? rs.getInt("TechnicianID") : 0;
                     bills.add(new Bill(
                         rs.getInt("BillID"),
                         rs.getInt("CustomerID"),
@@ -140,7 +137,7 @@ public class BillCRUD
                         rs.getDate("DueDate"),
                         rs.getString("Status"),
                         rs.getInt("GeneratedByStaffID"),
-                        rs.getInt("TechnicianID")
+                        technician
                     ));
                 }
             }
@@ -148,6 +145,36 @@ public class BillCRUD
             e.printStackTrace();
         }
         return bills;
+    }
+
+    // This is the new method that was missing
+    public List<Bill> getBillsEligibleForPenalty(Date currentDate) {
+        List<Bill> list = new ArrayList<>();
+        String sql = "SELECT * FROM Bill WHERE (Status = 'UNPAID' OR Status = 'PARTIALLY_PAID') AND DueDate < ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setDate(1, currentDate);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int technician = (rs.getObject("TechnicianID") != null) ? rs.getInt("TechnicianID") : 0;
+                    list.add(new Bill(
+                            rs.getInt("BillID"),
+                            rs.getInt("CustomerID"),
+                            rs.getInt("ConsumptionID"),
+                            rs.getInt("RateID"),
+                            rs.getDouble("AmountDue"),
+                            rs.getDate("DueDate"),
+                            rs.getString("Status"),
+                            rs.getInt("GeneratedByStaffID"),
+                            technician
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Bill getBillsEligibleForPenalty error: " + e.getMessage());
+        }
+        return list;
     }
 
     // UPDATE
@@ -163,7 +190,6 @@ public class BillCRUD
             ps.setDate(5, bill.dueDate());
             ps.setString(6, bill.status());
             ps.setInt(7, bill.generatedByStaffID());
-            // Optional technician ID handling (0 -> NULL)
             if (bill.technicianID() == 0) {
                 ps.setNull(8, Types.INTEGER);
             } else {
